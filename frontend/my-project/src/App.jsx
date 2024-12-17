@@ -1,16 +1,17 @@
 import React from 'react'
-
-import Home from './components/Home'
 import Navbar from './components/Navbar'
 import Carousel from './components/Carousel'
+import Explore from './components/Explore'
+import Home from './components/Home'
 
 const App = () => {
   return (
     <>
       <div className='mx-16 '>
         <Navbar />
-     
         <Carousel/>
+        <Explore/>
+        <Home/>
       </div>
     </>
   )
