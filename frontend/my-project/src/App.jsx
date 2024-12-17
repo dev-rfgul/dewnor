@@ -7,11 +7,11 @@ import Home from './components/Home'
 const App = () => {
   return (
     <>
-      <div className='mx-16 '>
+      <div>
         <Navbar />
-        <Carousel/>
-        <Explore/>
-        <Home/>
+        <Carousel />
+        <Explore />
+        <Home />
       </div>
     </>
   )
