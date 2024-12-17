@@ -10,7 +10,7 @@ const Navbar = () => {
                 <p>Free Express Shipping in UAE ~ 30 Days Guarantee!</p>
             </div>
 
-            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="container mx-auto px-4 p    y-4 flex items-center justify-between">
                 {/* Logo Section */}
                 <div className="flex items-center space-x-4">
                     <img
