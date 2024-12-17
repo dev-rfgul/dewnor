@@ -1,3 +1,99 @@
+
+
+// "use client";
+// import React from "react";
+// import Slider from "react-slick";
+// import "slick-carousel/slick/slick.css";
+// import "slick-carousel/slick/slick-theme.css";
+
+// const Carousel = () => {
+
+
+//     const settings = {
+//         className: "center",
+//         centerMode: true,
+//         infinite: true,
+//         centerPadding: "60px",
+//         autoplay: true,
+//         autoplaySpeed: 3000, // Adjust autoplay speed to 3 seconds
+//         slidesToShow: 1,
+//         speed: 500,
+//         focusOnSelect: true, // Allow slide selection
+//         responsive: [
+//             {
+//                 breakpoint: 1024,
+//                 settings: {
+//                     slidesToShow: 3,
+//                     centerPadding: "40px",
+//                 },
+//             },
+//             {
+//                 breakpoint: 768,
+//                 settings: {
+//                     slidesToShow: 2,
+//                     centerPadding: "40px",
+//                 },
+//             },
+//             {
+//                 breakpoint: 480,
+//                 settings: {
+//                     slidesToShow: 1,
+//                     centerPadding: "20px",
+//                 },
+//             },
+//         ],
+//     };
+
+
+//     const data = [
+//         {
+//             name: "Product A",
+//             price: "$299",
+//             description:
+//                 "High-quality product with great features and performance.",
+//             img: "./images/carousel-image-1.png",
+//         },
+//         {
+//             name: "Product B",
+//             price: "$399",
+//             description: "Amazing features for the price. A must-have!",
+//             img: "./images/carousel-image-2.jpeg",
+//         },
+//         {
+//             name: "Product C",
+//             price: "$499",
+//             description:
+//                 "Perfect blend of quality and design. Get it before it's gone!",
+//             img: "./images/carousel-image-3.jpeg",
+//         },
+//     ];
+
+//     return (
+//         <div className="w-11/12 lg:w-3/4 m-auto mt-16">
+//             <Slider {...settings}>
+//                 {data.map((d, index) => (
+//                     <div
+//                         key={index}
+//                         className="m-5 bg-white rounded-xl overflow-hidden shadow-lg transition duration-300 transform hover:scale-105"
+//                     >
+//                         <div className="h-[500px] rounded-t-xl bg-indigo-500 flex justify-center items-center relative">
+//                             <img
+//                                 src={d.img}
+//                                 className="w-full h-full object-cover"
+//                                 alt={`Product ${index + 1}`}
+//                             />
+//                         </div>
+//                     </div>
+//                 ))}
+//             </Slider>
+//         </div>
+//     );
+
+// };
+
+// export default Carousel;
+
+
 "use client";
 import React from "react";
 import Slider from "react-slick";
@@ -9,27 +105,24 @@ const Carousel = () => {
         className: "center",
         centerMode: true,
         infinite: true,
-        centerPadding: "60px",
+        centerPadding: "50px",
+        autoplay: true,
+        autoplaySpeed: 3000,
         slidesToShow: 1,
         speed: 500,
-        autoplay: true,
-        autoplaySpeed: 1000, // 2 seconds
+        arrows: true, // Enable next/prev arrows
+        dots: true, // Add navigation dots
+        focusOnSelect: true,
         responsive: [
             {
                 breakpoint: 1024,
                 settings: {
-                    slidesToShow: 3,
+                    slidesToShow: 2,
+                    centerPadding: "30px",
                 },
             },
             {
                 breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                    centerPadding: "40px",
-                },
-            },
-            {
-                breakpoint: 480,
                 settings: {
                     slidesToShow: 1,
                     centerPadding: "20px",
@@ -40,45 +133,57 @@ const Carousel = () => {
 
     const data = [
         {
-            name: "A",
-            age: 20,
-            review:
-                "Hello I am Fahad, and I want to say that styling is fun and I love it.",
+            name: "Product A",
+            price: "$299",
+            description: "High-quality product with great features and performance.",
             img: "./images/carousel-image-1.png",
         },
         {
-            name: "B",
-            age: 25,
-            review:
-                "GST Registration was never this easy. Register your sales tax with Befiler Now.",
+            name: "Product B",
+            price: "$399",
+            description: "Amazing features for the price. A must-have!",
             img: "./images/carousel-image-2.jpeg",
         },
         {
-            name: "C",
-            age: 30,
-            review:
-                "GST Registration was never this easy. Register your sales tax with Befiler Now.",
+            name: "Product C",
+            price: "$499",
+            description: "Perfect blend of quality and design. Get it before it's gone!",
             img: "./images/carousel-image-3.jpeg",
         },
-  
     ];
 
     return (
-        <div className="w-full m-auto overflow-hidden">
-            <div className="mt-20">
-                <Slider {...settings}>
-                    {data.map((d, index) => (
-                        <div
-                            key={index}
-                            className="w-full h-[500px]  bg-repeat bg-center"
-                        ></div>
-                    ))}
-                </Slider>
-            </div>
+        <div className="carousel-container w-11/12 lg:w-3/4 mx-auto mt-16">
+            <Slider {...settings}>
+                {data.map((item, index) => (
+                    <div
+                        key={index}
+                        className="carousel-item bg-white rounded-xl shadow-lg overflow-hidden transform transition duration-300 hover:scale-105"
+                    >
+                        <div className="relative h-[400px] lg:h-[500px]">
+                            <img
+                                src={item.img}
+                                alt={`${item.name}`}
+                                className="w-full h-full object-cover"
+                            />
+                            {/* Overlay for better text visibility */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80"></div>
+                            {/* Product Details */}
+                            <div className="absolute bottom-4 left-6 text-white z-10">
+                                <h3 className="text-xl lg:text-2xl font-semibold">
+                                    {item.name}
+                                </h3>
+                                <p className="text-lg">{item.price}</p>
+                                <p className="text-sm mt-2 hidden lg:block">
+                                    {item.description}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </Slider>
         </div>
     );
-    
-    
 };
 
 export default Carousel;
