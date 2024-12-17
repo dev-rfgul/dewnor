@@ -9,7 +9,7 @@ const App = () => {
     <>
       <div className='mx-16 '>
         <Navbar />
-        <Home />
+     
         <Carousel/>
       </div>
     </>
