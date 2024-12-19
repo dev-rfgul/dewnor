@@ -149,7 +149,7 @@ const ProductGrid = () => {
 //                 <button
 //                     className="w-full bg-green-500 text-white py-2 rounded-lg text-sm font-semibold hover:bg-green-600 transition-colors"
 //                 >
-//                     Add to Cart
+//                     Add to Cartn
 //                 </button>
 //             </div>
 //         </div>
