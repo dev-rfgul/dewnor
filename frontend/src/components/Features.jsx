@@ -1,11 +1,5 @@
-import { Globe, Shield, Tag, Shirt } from "lucide-react";
+import React from "react";
 
-const features = [
-    { icon: <Globe size={60} />, text: "Worldwide Shipping" },
-    { icon: <Shirt size={60} />, text: "Best Quality" },
-    { icon: <Tag size={60} />, text: "Best Offers" },
-    { icon: <Shield size={60} />, text: "Secure Payments" },
-];
 const imgs=[
     {
         img:"./images/icons/globe-free-img.png",
