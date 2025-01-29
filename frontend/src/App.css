@@ -7,5 +7,5 @@
 }
 
 /* Import slick-carousel styles (no ~ needed in Vite) */
-@import "/slick-carousel/slick/slick.css";
-@import "/slick-carousel/slick/slick-theme.css";
+@import "slick-carousel/slick/slick.css";
+@import "slick-carousel/slick/slick-theme.css";
