@@ -6,6 +6,23 @@ const features = [
     { icon: <Tag size={60} />, text: "Best Offers" },
     { icon: <Shield size={60} />, text: "Secure Payments" },
 ];
+const imgs=[
+    {
+        img:"./images/icons/globe-free-img.png",
+        text:"Worldwide Shipping"
+    },
+    {
+        img:"./images/icons/quality-free-img.png",
+        text:"Best Quality"
+    },
+    {
+        img:"./images/icons/tag-free-img.png",
+        text:"Best Offers"
+    },
+    {
+        img:"./images/icons/lock-free-img.png",
+        text:"Secure Payments"}
+]
 
 export default function FeatureSection() {
     return (
@@ -13,12 +30,13 @@ export default function FeatureSection() {
             <div className="max-w-6xl mx-auto px-6">
                 {/* Features Section */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center mb-12">
-                    {features.map((feature, index) => (
+                    {imgs.map((feature, index) => (
                         <div
                             key={index}
                             className="flex flex-col items-center p-6 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 ease-in-out"
                         >
                             <div className="mb-4">{feature.icon}</div>
+                            <img src={feature.img} alt="" />
                             <p className="text-xl font-semibold text-gray-800">{feature.text}</p>
                         </div>
                     ))}
