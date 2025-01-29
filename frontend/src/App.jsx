@@ -6,6 +6,7 @@ import Heading from './components/Heading'
 import FeaturedProducts from './components/FeaturedProducts'
 import Footer from './components/Footer'
 import ProductDisplay from './components/ProductDisplay'
+import FeatureSection from './components/Features'
 
 const App = () => {
   return (
@@ -17,8 +18,9 @@ const App = () => {
         <Explore />
         <Heading heading={"Featured Products"} subHeading={"Check out our Featured Products"} />
         <FeaturedProducts />
-        <ProductDisplay/>
-        <Footer/>
+        {/* <ProductDisplay /> */}
+        <FeatureSection />
+        <Footer />
 
       </div>
     </>
