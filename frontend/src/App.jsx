@@ -11,7 +11,7 @@ import FeatureSection from './components/Features'
 const App = () => {
   return (
     <>
-      <div className='bg-green-300'>
+      <div className='overflow-hidden'>
         <Navbar />
         <Carousel />
         <Heading heading={"Explore"} subHeading={"Explore our wide range of products"} />
