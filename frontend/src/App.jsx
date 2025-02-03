@@ -8,7 +8,7 @@ import Footer from './components/Footer'
 import ProductDisplay from './components/ProductDisplay'
 import FeatureSection from './components/Features'
 
-import { BrowserRouter } from 'react-router-dom'
+import { BrowserRouter, Route, Router, Routes } from 'react-router-dom'
 
 const App = () => {
   return (
@@ -22,7 +22,9 @@ const App = () => {
           <Heading heading={"Featured Products"} subHeading={"Check out our Featured Products"} />
           <FeaturedProducts />
           <FeatureSection />
-          {/* <ProductDisplay /> */}
+          <Routes>
+            <Route path='/product/:id' element={<ProductDisplay />} />
+          </Routes> 
           <Footer />
         </div>
       </BrowserRouter>
