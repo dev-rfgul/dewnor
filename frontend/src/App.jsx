@@ -10,6 +10,7 @@ import FeatureSection from './components/Features'
 
 import { BrowserRouter, Route, Router, Routes } from 'react-router-dom'
 
+
 const App = () => {
   return (
     <>
