@@ -5,6 +5,10 @@
   width: 100%;
   height: 100%;
 }
+body{
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: blue;
+}
 
 /* Import slick-carousel styles (no ~ needed in Vite) */
 @import "slick-carousel/slick/slick.css";
