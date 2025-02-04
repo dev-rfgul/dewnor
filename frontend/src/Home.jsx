@@ -5,8 +5,6 @@ import Heading from './components/Heading'
 import FeaturedProducts from './components/FeaturedProducts'
 import FeatureSection from './components/Features'
 
-import { BrowserRouter, Route, Router, Routes } from 'react-router-dom'
-
 const Home = () => {
     return (
         <>

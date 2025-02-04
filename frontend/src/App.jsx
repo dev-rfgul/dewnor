@@ -1,6 +1,5 @@
 import React from 'react'
 import Home from './Home'
-import Footer from './components/Footer'
 import ProductDisplay from './components/ProductDisplay'
 
 import { BrowserRouter, Route, Router, Routes } from 'react-router-dom'
