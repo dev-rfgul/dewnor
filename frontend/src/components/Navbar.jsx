@@ -2,9 +2,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faHeart, faShoppingCart, faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
-import Signup from './Signup';
-import Login from './Login'
-
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
@@ -41,12 +39,20 @@ const Navbar = () => {
                         <FontAwesomeIcon icon={faUser} className="text-black text-lg" />
                         <div>
                             <p className="text-gray-500 text-sm">My Account</p>
-                            <a
-                                href="#"
-                                className="text-black font-semibold text-sm hover:text-gray-700 transition"
-                            >
-                                Signup & Login
-                            </a>
+                            <nav>
+                                <Link
+                                    to="/signup"
+                                    className="text-black font-semibold text-sm hover:text-gray-700 transition"
+                                >
+                                    Signup
+                                </Link>
+                                <Link
+                                    to="/login"
+                                    className="ml-5 text-black font-semibold text-sm hover:text-gray-700 transition"
+                                >
+                                    Login
+                                </Link>
+                            </nav>
                         </div>
                     </div>
 

@@ -42,11 +42,9 @@ const Login = () => {
                             Welcome Back
                         </h2>
                     </div>
-
                     <p className="text-lg text-gray-500 dark:text-gray-400 text-center">
                         Log in to your account
                     </p>
-
                     <form onSubmit={submit} className="mt-6 space-y-4">
                         <div>
                             <label
@@ -64,7 +62,6 @@ const Login = () => {
                                 placeholder="Enter your email"
                             />
                         </div>
-
                         <div>
                             <label
                                 htmlFor="password"
@@ -81,7 +78,6 @@ const Login = () => {
                                 placeholder="Enter your password"
                             />
                         </div>
-
                         <button
                             type="submit"
                             className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-4 rounded-md hover:from-blue-600 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
@@ -89,7 +85,6 @@ const Login = () => {
                             Log In
                         </button>
                     </form>
-
                     <p className="text-sm text-gray-600 dark:text-gray-400 text-center mt-6">
                         Don’t have an account?{" "}
                         <a href="#" className="text-blue-200 hover:underline">

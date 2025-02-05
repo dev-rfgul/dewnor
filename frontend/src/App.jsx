@@ -11,16 +11,14 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 const App = () => {
   return (
     <>
-      <BrowserRouter>
-        <div className='overflow-hidden'>
-          <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/signup' element={<Signup/>} />
-            <Route path='/login' element={<Login/>} />
-            <Route path='/product/:id' element={<ProductDisplay />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
+      <div className='overflow-hidden'>
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/signup' element={<Signup />} />
+          <Route path='/login' element={<Login />} />
+          <Route path='/product/:id' element={<ProductDisplay />} />
+        </Routes>
+      </div>
     </>
   )
 }
