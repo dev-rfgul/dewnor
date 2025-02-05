@@ -21,6 +21,7 @@ router.post('/signup', async (req, res) => {
         name,
         email,
         password: hashPassword,
+        isAdmin: "user"
     });
     await user.save();
     res.status(200).json({ message: 'User Created', user })
@@ -40,7 +41,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Proceed to send success response
-        res.status(200).json({ message: 'Login success' });
+        res.status(200).json({ message: 'Login success', user });
 
     } catch (err) {
         res.status(500).json({ message: 'Server error', error: err.message });

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import axios from "axios"; // Ensure axios is imported
 import { useNavigate } from "react-router-dom";
@@ -17,10 +16,11 @@ const Login = () => {
         axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/login`, { email, password })
             .then((result) => {
                 console.log(result);
-                const userData = result.data;
+                const userData = result.data.user;
+                localStorage.setItem("user", JSON.stringify(userData))
                 // console.log(userData)
                 // Check the email to determine the redirection path
-                if (email === "admin@admin.com") {
+                if (email === "admin@dewnor.com") {
                     navigate('/admin', { state: { user: userData } }); // Redirect to admin page
                 } else {
                     navigate('/', { state: { user: userData } });

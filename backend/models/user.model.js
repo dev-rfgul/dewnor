@@ -5,6 +5,11 @@ const UserSchema = new mongoose.Schema({
         required: true,
         lowercase: true,
     },
+    isAdmin: {
+        type: String,
+        enum: ["admin", "user"],
+        default: "user",
+    },
     email: {
         type: String,
         required: true,
@@ -15,10 +20,10 @@ const UserSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    cart: {
+    cart: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Products'
-    }
+    }],
 
 }, { timestamps: true })
 
