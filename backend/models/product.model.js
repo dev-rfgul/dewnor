@@ -11,11 +11,11 @@ const ProductSchema = new mongoose.Schema({
         required: true,
     },
     price: {
-        type: int32,
+        type: Number,
         required: true,
     },
     stock: {
-        type: int32,
+        type: Number,
         required: true,
     },
     color: [{

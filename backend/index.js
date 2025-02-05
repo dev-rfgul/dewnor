@@ -5,13 +5,15 @@ import cors from 'cors';
 
 import { connectDB } from './config/db.js';
 import userRoutes from './routes/user.routes.js';
+import productRoutes from './routes/product.routes.js';
 
 
 var corsOption = {
     // origin: process.env.FRONT_END_URL,
     origin: "*",
-    
+
 }
+
 
 const app = express();
 dotenv.config();
@@ -29,6 +31,7 @@ app.get('/', (req, res) => {
     res.send(" the backend is working")
 })
 app.use('/user', userRoutes);
+app.use('/product', productRoutes);
 
 
 const port = process.env.LOCALHOST
