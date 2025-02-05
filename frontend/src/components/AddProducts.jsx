@@ -577,7 +577,7 @@ const AddProductForm = () => {
                     images: '',
                     size: '',
                 });
-                
+
             } else {
                 alert(data.message || 'Failed to add product');
             }
@@ -600,10 +600,23 @@ const AddProductForm = () => {
     };
     useEffect(() => {
         fetchProducts()
-    },[])
+    }, [])
 
+    const handleDelete = async (id) => {
+        try {
+            await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/delete-product/${id}`, {
+                method: "DELETE",
+            });
+
+            // Remove product from the list
+            setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
+        } catch (error) {
+            console.error("Error deleting product:", error);
+        }
+    };
     return (
         <>
+            {/* add products form  */}
             <div className="max-w-lg mx-auto mt-12 p-8 bg-white rounded-lg shadow-lg">
                 <h2 className="text-3xl font-bold text-center mb-6">Add Product</h2>
                 <form onSubmit={handleSubmit}>
@@ -690,7 +703,7 @@ const AddProductForm = () => {
                     </div>
                 </form>
             </div>
-
+            {/* display products */}
             <div className="mt-12">
                 <h1 className="text-3xl font-bold text-center mb-8">Product List</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 px-6">
@@ -707,8 +720,10 @@ const AddProductForm = () => {
                                     <p className="text-md text-gray-600 mt-2">{product.description}</p>
                                     <div className="flex items-center justify-between mt-6">
                                         <span className="text-lg font-semibold text-blue-500">${product.price}</span>
-                                        <button className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition">
-                                            Add to Cart
+                                        <button
+                                            onClick={() => { handleDelete(product._id) }}
+                                            className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition">
+                                            Delete Product
                                         </button>
                                     </div>
                                     <div className="mt-4 text-gray-500">
