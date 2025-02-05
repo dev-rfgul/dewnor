@@ -23,7 +23,7 @@ router.post('/signup', async (req, res) => {
         password: hashPassword,
     });
     await user.save();
-    res.status(401).json({ message: 'User Created', user })
+    res.status(200).json({ message: 'User Created', user })
 })
 router.post('/login', async (req, res) => {
     try {

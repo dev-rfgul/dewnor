@@ -13,10 +13,10 @@ const Signup = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [department, setDepartment] = useState('');
-
+    console.log(import.meta.env.VITE_BACKEND_URL)
     const submit = (e) => {
         e.preventDefault();
-        axios.post("http://localhost:3001/createUser", { name, email, password, department })
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/signup`, { name, email, password })
             .then(result => {
                 console.log('Response:', result.data); // Log response data
                 navigate('/login'); // Navigate after successful post request
@@ -53,21 +53,7 @@ const Signup = () => {
                                 onChange={(e) => setName(e.target.value)}
                             />
                         </div>
-                        <div>
-                            <label
-                                htmlFor="text"
-                                className="block text-gray-700 dark:text-gray-300 text-sm font-medium mb-1"
-                            >
-                                Department
-                            </label>
-                            <input
-                                type="text"
-                                id="department"
-                                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white"
-                                placeholder="Enter your Department"
-                                onChange={(e) => setDepartment(e.target.value)}
-                            />
-                        </div>
+
                         <div>
                             <label
                                 htmlFor="email"
