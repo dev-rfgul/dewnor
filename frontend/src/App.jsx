@@ -6,6 +6,7 @@ import Signup from './components/Signup'
 import Login from './components/Login'
 import ProductDisplay from './components/ProductDisplay'
 import Admin from './components/Admin'
+import AddProduct from './components/AddProducts'
 
 const App = () => {
   const user = JSON.parse(localStorage.getItem("user"))
@@ -20,7 +21,10 @@ const App = () => {
           <Route path='/login' element={<Login />} />
           <Route path='/product/:id' element={<ProductDisplay />} />
           {user?.isAdmin === 'admin' && (
-            <Route path='/admin' element={<Admin />} />
+            <>
+              <Route path='/admin' element={<Admin />} />
+              <Route path='/add-product' element={<AddProduct />} />
+            </>
           )}
         </Routes>
 

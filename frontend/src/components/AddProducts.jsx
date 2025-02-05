@@ -6,7 +6,10 @@ const AddProduct = () => {
         name: "",
         description: "",
         price: "",
-        image: "",
+        stock: "",
+        color: "",
+        images: "",
+        size: "",
     });
 
     const [products, setProducts] = useState([]);
@@ -45,10 +48,13 @@ const AddProduct = () => {
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
-                        title: form.name,
+                        name: form.name,
                         description: form.description,
                         price: form.price,
-                        imgUrl: form.image,
+                        stock: form.stock,
+                        color: form.color,
+                        imgUrl: form.images,
+                        size: form.size,
                     }),
                 });
 
@@ -56,7 +62,7 @@ const AddProduct = () => {
                 setProducts((prevProducts) =>
                     prevProducts.map((product) =>
                         product.id === editingProductId
-                            ? { ...product, title: form.name, description: form.description, price: form.price, imgUrl: form.image }
+                            ? { ...product, name: form.name, description: form.description, price: form.price, stock: form.stock, color: form.color, imgUrl: form.images, size: form.size }
                             : product
                     )
                 );
@@ -64,7 +70,7 @@ const AddProduct = () => {
                 // Reset form and state
                 setIsEditing(false);
                 setEditingProductId(null);
-                setForm({ name: "", description: "", price: "", image: "" });
+                setForm({ name: "", description: "", price: "", image: "", stock: "", size: "", color: "" });
             } catch (error) {
                 console.error("Error updating product:", error);
             }
@@ -80,14 +86,17 @@ const AddProduct = () => {
                         title: form.name,
                         description: form.description,
                         price: form.price,
-                        imgUrl: form.image,
+                        stock: form.stock,
+                        color: form.color,
+                        imgUrl: form.images,
+                        size: form.size,
                     }),
                 });
 
                 const data = await response.json();
                 setProducts((prevProducts) => [...prevProducts, data]);
 
-                setForm({ name: "", description: "", price: "", image: "" });
+                setForm({ name: "", description: "", price: "", image: "", color: "", size: "", stock: "" });
             } catch (error) {
                 console.error("Error adding product:", error);
             }
@@ -101,7 +110,10 @@ const AddProduct = () => {
             name: product.title,
             description: product.description,
             price: product.price,
+            stock: product.stock,
+            color: product.color,
             image: product.imgUrl,
+            size: product.size
         });
         setIsEditing(true);
         setEditingProductId(product.id);
@@ -171,6 +183,34 @@ const AddProduct = () => {
                             required
                         />
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Stock
+                        </label>
+                        <input
+                            type="number"
+                            name="stock"
+                            value={form.stock}
+                            onChange={handleChange}
+                            className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter product stock"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Color
+                        </label>
+                        <input
+                            type="color"
+                            name="color"
+                            value={form.color} // Assuming you are using `form.color` for your state
+                            onChange={handleChange}
+                            className="w-12 h-12 p-0 border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            required
+                        />
+                    </div>
+
 
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -179,10 +219,24 @@ const AddProduct = () => {
                         <input
                             type="text"
                             name="image"
-                            value={form.image}
+                            value={form.images}
                             onChange={handleChange}
                             className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter product image URL"
+                            required
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Size
+                        </label>
+                        <input
+                            type="text"
+                            name="size"
+                            value={form.size}
+                            onChange={handleChange}
+                            className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Enter product size"
                             required
                         />
                     </div>
