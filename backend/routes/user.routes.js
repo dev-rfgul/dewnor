@@ -47,6 +47,30 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 });
+// Update user role API
+router.put("/update-role", async (req, res) => {
+    const { userId, role } = req.body;
+
+    if (!userId || !role) {
+        return res.status(400).json({ message: "User ID and role are required." });
+    }
+
+    try {
+        const updatedUser = await userModel.findByIdAndUpdate(userId, { role }, { new: true });
+
+        if (!updatedUser) {
+            return res.status(404).json({ message: "User not found." });
+        }
+
+        res.json({ message: "Role updated successfully!", user: updatedUser });
+    } catch (error) {
+        console.error("Error updating role:", error);
+        res.status(500).json({ message: "Server error", error });
+    }
+});
+
+
+
 
 router.get('/get-users', async (req, res) => {
     try {
