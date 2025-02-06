@@ -203,6 +203,8 @@ const User = () => {
     }, []);
 
     const handleRoleChange = async (userId, newRole) => {
+
+        alert("are you sure you want to  update the role")
         try {
             const response = await fetch(`http://localhost:3000/user/update-role `, {
                 method: "PUT",

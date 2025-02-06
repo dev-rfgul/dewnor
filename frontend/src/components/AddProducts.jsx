@@ -87,8 +87,9 @@ const AddProductForm = () => {
     }, [])
 
     const handleDelete = async (id) => {
+        alert("are you sure you want to delete the product")
         try {
-            await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/delete/${id}`, {
+            await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/delete-product/${id}`, {
                 method: "DELETE",
             });
 

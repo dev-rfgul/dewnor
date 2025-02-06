@@ -13,7 +13,7 @@ app.get('/get-products', (req, res) => {
         .then(users => res.json(users))
         .catch(error => res.json(error))
 })
-app.post('/add', async (req, res) => {
+app.post('/add-product', async (req, res) => {
     const { name, description, price, stock, color, images, size } = req.body;
     const product = new productModel({
         name,
@@ -28,7 +28,7 @@ app.post('/add', async (req, res) => {
     await product.save();
     res.status(200).json({ message: "Product created Successfully", product })
 })
-app.delete('/delete/:id', async (req, res) => {
+app.delete('/delete-product/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const product = await productModel.findByIdAndDelete(id);
