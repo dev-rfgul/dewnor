@@ -1,6 +1,6 @@
 
 import React from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import {   Route, Routes } from 'react-router-dom'
 import Home from './Home'
 import Signup from './components/Signup'
 import Login from './components/Login'
@@ -29,7 +29,6 @@ const App = () => {
             </>
           )}
         </Routes>
-
       </div>
     </>
   )

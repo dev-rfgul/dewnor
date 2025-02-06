@@ -13,7 +13,7 @@ app.get('/get-products', (req, res) => {
         .then(users => res.json(users))
         .catch(error => res.json(error))
 })
-app.post('/get-products', async (req, res) => {
+app.post('/add', async (req, res) => {
     const { name, description, price, stock, color, images, size } = req.body;
     const product = new productModel({
         name,
@@ -24,10 +24,11 @@ app.post('/get-products', async (req, res) => {
         images,
         size,
     })
+
     await product.save();
     res.status(200).json({ message: "Product created Successfully", product })
 })
-app.delete('/delete-product/:id', async (req, res) => {
+app.delete('/delete/:id', async (req, res) => {
     try {
         const id = req.params.id;
         const product = await productModel.findByIdAndDelete(id);
@@ -41,7 +42,7 @@ app.delete('/delete-product/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.put('/edit-product/:id', async (req, res) => {
+app.put('/edit/:id', async (req, res) => {
     try {
         const { name, description, price, stock, color, images, size } = req.body;
         const updatedProduct = await productModel.findByIdAndUpdate(
@@ -59,6 +60,8 @@ app.put('/edit-product/:id', async (req, res) => {
         res.status(500).json({ message: "Error while updating the product", error });
     }
 });
+
+
 
 
 export default app;
