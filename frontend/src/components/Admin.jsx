@@ -10,10 +10,10 @@ const Admin = () => {
                     Home
                 </Link>
                 <Link to="/add-product" className="hover:bg-blue-600 px-4 py-2 rounded">
-                    Add Product
+                    Product
                 </Link>
-                <Link to="/add-reviews" className="hover:bg-blue-600 px-4 py-2 rounded">
-                    Add Reviews
+                <Link to="/add-users" className="hover:bg-blue-600 px-4 py-2 rounded">
+                    Users
                 </Link>
 
             </nav>

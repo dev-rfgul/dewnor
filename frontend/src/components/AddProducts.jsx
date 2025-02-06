@@ -598,22 +598,15 @@ const AddProductForm = () => {
             console.error("Error fetching products:", error);
         }
     };
+
+useEffect(()=>{
+
+},[])
+
+
     useEffect(() => {
         fetchProducts()
-    }, [])
-
-    const handleDelete = async (id) => {
-        try {
-            await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/delete-product/${id}`, {
-                method: "DELETE",
-            });
-
-            // Remove product from the list
-            setProducts((prevProducts) => prevProducts.filter((product) => product.id !== id));
-        } catch (error) {
-            console.error("Error deleting product:", error);
-        }
-    };
+    }, [product])
     return (
         <>
             {/* add products form  */}
