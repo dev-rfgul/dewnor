@@ -18,9 +18,9 @@ const Login = () => {
                 console.log(result);
                 const userData = result.data.user;
                 localStorage.setItem("user", JSON.stringify(userData))
-                // console.log(userData)
+                console.log(userData)
                 // Check the email to determine the redirection path
-                if (email === "admin@dewnor.com") {
+                if (userData.role === "admin") {
                     navigate('/admin', { state: { user: userData } }); // Redirect to admin page
                 } else {
                     navigate('/', { state: { user: userData } });

@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children }) => {
     // if (!user || !user.isAdmin) {
     //     return <Navigate to="/" replace />;
     // }
-    if (user.isAdmin === "admin") {
+    if (user.role === "admin") {
         return <Navigate to="/add-product" />
     }
     return children;

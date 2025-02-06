@@ -11,7 +11,6 @@ const Signup = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [department, setDepartment] = useState('');
     console.log(import.meta.env.VITE_BACKEND_URL)
     const submit = (e) => {
         e.preventDefault();
