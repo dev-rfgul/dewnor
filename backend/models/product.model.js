@@ -14,9 +14,18 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
-    category: {
-        type:String,
-        enum:''
+    category: [
+        {
+            type: String,
+            required: true,
+        }
+    ],
+    SKU: {
+        type: String,
+        required: true
+    },
+    tag: {
+        type: String,
     },
     stock: {
         type: Number,

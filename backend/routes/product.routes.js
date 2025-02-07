@@ -14,7 +14,7 @@ app.get('/get-products', (req, res) => {
         .catch(error => res.json(error))
 })
 app.post('/add-product', async (req, res) => {
-    const { name, description, price, stock, color, images, size } = req.body;
+    const { name, description, price, stock, color, images, size, SKU, category, tag } = req.body;
     const product = new productModel({
         name,
         description,
@@ -23,6 +23,9 @@ app.post('/add-product', async (req, res) => {
         color,
         images,
         size,
+        SKU,
+        category,
+        tag,
     })
 
     await product.save();

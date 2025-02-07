@@ -10,6 +10,9 @@ const AddProductForm = () => {
         color: '',
         images: '',
         size: '',
+        SKU: '',
+        category: '',
+        tag: '',
     });
     const [products, setProducts] = useState();
     const handleChange = (e) => {
@@ -110,6 +113,7 @@ const AddProductForm = () => {
                         <input
                             type="text"
                             name="name"
+                            placeholder='Enter the Name '
                             value={product.name}
                             onChange={handleChange}
                             className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
@@ -121,6 +125,7 @@ const AddProductForm = () => {
                         <textarea
                             name="description"
                             value={product.description}
+                            placeholder='Enter Description of the Product'
                             onChange={handleChange}
                             className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
                             required
@@ -156,6 +161,7 @@ const AddProductForm = () => {
                             type="text"
                             name="color"
                             value={product.color}
+                            placeholder='Enter Colors separated by Commas'
                             onChange={handleChange}
                             className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
                         />
@@ -166,6 +172,7 @@ const AddProductForm = () => {
                             type="text"
                             name="images"
                             value={product.images}
+                            placeholder='Enter Img URL separated By Commas'
                             onChange={handleChange}
                             className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
                             required
@@ -178,9 +185,49 @@ const AddProductForm = () => {
                             name="size"
                             value={product.size}
                             onChange={handleChange}
+                            placeholder='Enter Size of the Product'
                             className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
+                    <div className="mb-6">
+                        <label className="block text-lg font-medium text-gray-700">SKU</label>
+                        <input
+                            type="text"
+                            name="SKU"
+                            value={product.SKU}
+                            onChange={handleChange}
+                            placeholder='Enter SKU'
+                            className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div className="mb-6">
+                        <label className="block text-lg font-medium text-gray-700">Category</label>
+                        <input
+                            type="text"
+                            name="category"
+                            value={product.category}
+                            onChange={handleChange}
+                            placeholder='Enter the Categories Separated by Commas'
+                            className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div className="mb-6">
+                        <label className="block text-lg font-medium text-gray-700">Tag</label>
+                  
+                    </div>
+                    
+                    <select
+                        type="text"
+                        name="tag"
+                        value={product.tag}
+                        placeholder='Enter the Tag'
+                        onChange={handleChange}
+                        className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="user">Wallet</option>
+                        <option value="admin">Gadgets</option>
+                        <option value="admin">Bags</option>
+                    </select>
                     <div className="text-center">
                         <button type="submit" className="px-6 py-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition">
                             Add Product
