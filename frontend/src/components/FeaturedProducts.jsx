@@ -1,99 +1,34 @@
-import React from "react";
-import { Link } from "react-router-dom";
 
-// Product Data Example
-const products = [
-    {
-        id: 1,
-        title: "Leather Belt- Vintage Brown",
-        originalPrice: 299.0,
-        discountedPrice: 185.0,
-        discount: 38,
-        image: "/images/explore/wallet-image-1.jpg",
-    },
-    {
-        id: 2,
-        title: "Apple Watch Leather Strap — Black",
-        originalPrice: 130.0,
-        discountedPrice: 160.0,
-        discount: 19,
-        image: "/images/explore/wallet-image-2.jpg",
-    },
-    {
-        id: 3,
-        title: "Leather 15 Cards Wallet",
-        originalPrice: 299.0,
-        discountedPrice: 150.0,
-        discount: 50,
-        image: "/images/explore/wallet-image-3.jpg",
-    },
-    {
-        id: 4,
-        title: "Leather Belt- Vintage Brown",
-        originalPrice: 299.0,
-        discountedPrice: 185.0,
-        discount: 38,
-        image: "/images/explore/gadget-image-1.jpg",
-    },
-    {
-        id: 5,
-        title: "Apple Watch Leather Strap — Black",
-        originalPrice: 130.0,
-        discountedPrice: 160.0,
-        discount: 19,
-        image: "/images/explore/gadget-image-2.jpg",
-    },
-    {
-        id: 6,
-        title: "Leather 15 Cards Wallet",
-        originalPrice: 299.0,
-        discountedPrice: 150.0,
-        discount: 50,
-        image: "/images/explore/gadget-image-3.jpg",
-    },
-    {
-        id: 7,
-        title: "Leather Belt- Vintage Brown",
-        originalPrice: 299.0,
-        discountedPrice: 185.0,
-        discount: 38,
-        image: "/images/explore/bag-image-1.jpg",
-    },
-    {
-        id: 8,
-        title: "Apple Watch Leather Strap — Black",
-        originalPrice: 130.0,
-        discountedPrice: 160.0,
-        discount: 19,
-        image: "/images/explore/bag-image-2.jpg",
-    },
-];
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
 const ProductCard = ({ product }) => {
     return (
-        <Link to={`/product/${product.id}`} className="block">
-            <div className="border rounded-lg shadow-md overflow-hidden bg-white hover:scale-105 transition-transform duration-300">
+        <Link to={`/product/${product._id}`} className="block">
+            <div className="border rounded-xl shadow-lg overflow-hidden bg-white hover:shadow-2xl hover:scale-105 transition-transform duration-300">
                 <div className="relative">
                     <img
-                        src={product.image}
+                        src={product.images[0]}
                         alt={product.title}
-                        className="w-full h-40 object-cover"
+                        className="w-full h-48 object-cover"
                     />
-                    <div className="absolute top-2 left-2 bg-green-500 text-white px-2 py-1 text-xs rounded">
-                        -{product.discount}%
-                    </div>
+                    {product.discount > 0 && (
+                        <div className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 text-xs font-semibold rounded-full shadow-md">
+                            -{product.discount}%
+                        </div>
+                    )}
                 </div>
                 <div className="p-4">
-                    <h3 className="text-sm font-semibold text-gray-800">{product.title}</h3>
+                    <h3 className="text-base font-semibold text-gray-900">{product.name}</h3>
                     <div className="flex items-center gap-2 mt-2">
-                        <span className="text-gray-400 line-through text-sm">
-                            {product.originalPrice}.د.إ
-                        </span>
-                        <span className="text-green-600 font-bold">
-                            {product.discountedPrice}.د.إ
-                        </span>
+                        <span className="text-gray-400 line-through text-sm">{product.originalPrice} د.إ</span>
+                        <span className="text-green-600 font-bold text-lg">{product.price} د.إ</span>
                     </div>
-                    <button className="mt-3 bg-gray-800 text-white text-xs px-4 py-2 rounded hover:bg-gray-700">
+                    <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
+                        <span className="font-medium">{product.tag}</span>
+                        <span className="font-medium">| SKU: {product.SKU}</span>
+                    </div>
+                    <button className="mt-4 w-full bg-gray-800 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-all">
                         ADD TO CART
                     </button>
                 </div>
@@ -103,9 +38,23 @@ const ProductCard = ({ product }) => {
 };
 
 const ProductGrid = () => {
+    const [products, setProducts] = useState([]);
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-products`);
+                const data = await response.json();
+                setProducts(data);
+            } catch (error) {
+                console.error("Error fetching products:", error);
+            }
+        };
+        fetchProducts();
+    }, []);
     return (
-        <div className="container mx-auto px-6 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="container mx-auto px-6 py-10">
+            <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">Our Products</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 ">
                 {products.map((product) => (
                     <ProductCard key={product.id} product={product} />
                 ))}
@@ -115,6 +64,3 @@ const ProductGrid = () => {
 };
 
 export default ProductGrid;
-
-
-

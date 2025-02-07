@@ -13,7 +13,6 @@ app.get('/get-products', (req, res) => {
         .then(users => res.json(users))
         .catch(error => res.json(error))
 })
-
 app.post('/add-product', async (req, res) => {
     const { name, description, price, stock, color, images, size, SKU, category, tag } = req.body;
     const product = new productModel({
@@ -64,6 +63,19 @@ app.put('/edit/:id', async (req, res) => {
         res.status(200).json({ message: "Product updated successfully", product: updatedProduct });
     } catch (error) {
         res.status(500).json({ message: "Error while updating the product", error });
+    }
+});
+app.get('/get-product/:id', async (req, res) => {
+    try {
+        const id = req.params.id;
+        const product = await productModel.findById(id);
+        if(!product){
+            return res.status(404).json({message:"product not found"})
+        }
+        res.json({ message: "Product found", product });
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
     }
 });
 

@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from 'react-router-dom';
 
 const ProductDisplay = () => {
+
+    const { id } = useParams(); // Get product ID from URL  
     const [product, setProduct] = useState(null);
     const [mainImage, setMainImage] = useState("");
     const [zoomPosition, setZoomPosition] = useState({ x: 0, y: 0 });
@@ -9,18 +12,23 @@ const ProductDisplay = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-products`);
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-product/${id}`);
                 const data = await response.json();
-                const product = data[1];
-                setProduct(product); // Assuming first product
-                setMainImage(product.images[1]); // Set first image as default
+
+                if (data.product) {
+                    setProduct(data.product);
+                    setMainImage(data.product.images[0]); // Set first image as default
+                } else {
+                    console.error("Product not found");
+                }
             } catch (error) {
                 console.error("Error fetching product:", error);
             }
         };
 
         fetchProduct();
-    }, []);
+    }, [id]); // Ensure it re-fetches when `id` changes
+
 
     if (!product) return <p>Loading...</p>;
 
@@ -54,7 +62,7 @@ const ProductDisplay = () => {
                             alt={product.name}
                             className="w-full h-auto rounded-lg shadow-md object-cover"
                         />
-    
+
                         {/* Zoomed-in area */}
                         {isZoomed && (
                             <div
@@ -70,7 +78,7 @@ const ProductDisplay = () => {
                             />
                         )}
                     </div>
-    
+
                     {/* Thumbnail images */}
                     <div className="flex flex-wrap justify-center gap-3 mt-4">
                         {product.images.map((img, index) => (
@@ -84,23 +92,23 @@ const ProductDisplay = () => {
                         ))}
                     </div>
                 </div>
-    
+
                 {/* Right: Product Details */}
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{product.name}</h1>
-    
+
                     {/* Discount Section */}
                     <div className="flex items-center space-x-2 mt-2">
                         <p className="text-red-500 text-lg font-semibold">-60%</p>
                         <p className="text-gray-500 line-through text-lg">{product.oldPrice} د.إ</p>
                         <p className="text-gray-900 font-bold text-xl">{product.price} د.إ</p>
                     </div>
-    
+
                     <p className="text-gray-600 mt-4">{product.description}</p>
-    
+
                     {/* Stock Info */}
                     <p className="font-bold text-gray-900 mt-4">{product.stock} in stock</p>
-    
+
                     {/* Quantity & Buttons */}
                     <div className="flex flex-wrap items-center gap-4 mt-4">
                         <input
@@ -116,7 +124,7 @@ const ProductDisplay = () => {
                             Add to wishlist
                         </button>
                     </div>
-    
+
                     {/* Category, SKU, Tag */}
                     <div className="mt-4 space-y-2 text-gray-700">
                         <p><b>Category:</b> {product.category}</p>
@@ -125,7 +133,7 @@ const ProductDisplay = () => {
                     </div>
                 </div>
             </div>
-    
+
             {/* Description */}
             <div className="mt-8">
                 <h2 className="text-xl sm:text-2xl font-bold">Description</h2>
@@ -140,7 +148,7 @@ const ProductDisplay = () => {
             </div>
         </div>
     );
-    
+
 };
 
 export default ProductDisplay;
