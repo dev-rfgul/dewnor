@@ -13,6 +13,7 @@ app.get('/get-products', (req, res) => {
         .then(users => res.json(users))
         .catch(error => res.json(error))
 })
+
 app.post('/add-product', async (req, res) => {
     const { name, description, price, stock, color, images, size, SKU, category, tag } = req.body;
     const product = new productModel({
@@ -28,7 +29,7 @@ app.post('/add-product', async (req, res) => {
         tag,
     })
 
-    
+
 
     await product.save();
     res.status(200).json({ message: "Product created Successfully", product })
@@ -70,5 +71,7 @@ app.put('/edit/:id', async (req, res) => {
 
 
 export default app;
+
+
 
 

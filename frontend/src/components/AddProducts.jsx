@@ -227,8 +227,11 @@ const AddProductForm = () => {
                         </div>
 
                         <div>
-                            <label className="block text-lg font-medium text-gray-700">Tag</label>
+                            <label htmlFor="tag" className="block text-lg font-medium text-gray-700">
+                                Tag
+                            </label>
                             <select
+                                id="tag"
                                 name="tag"
                                 value={product.tag}
                                 onChange={handleChange}
@@ -239,6 +242,7 @@ const AddProductForm = () => {
                                 <option value="bags">Bags</option>
                             </select>
                         </div>
+
                     </div>
 
                     <div className="mt-6 text-center">
