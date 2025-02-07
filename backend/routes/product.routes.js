@@ -28,6 +28,8 @@ app.post('/add-product', async (req, res) => {
         tag,
     })
 
+    
+
     await product.save();
     res.status(200).json({ message: "Product created Successfully", product })
 })

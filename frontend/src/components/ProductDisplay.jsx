@@ -202,7 +202,7 @@ const ProductDisplay = () => {
             try {
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-products`);
                 const data = await response.json();
-                setProduct(data[2]); // Assuming you want the first product
+                setProduct(data[3]); // Assuming you want the first product
             } catch (error) {
                 console.error("Error fetching product:", error);
             }

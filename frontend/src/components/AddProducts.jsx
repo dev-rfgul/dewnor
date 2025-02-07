@@ -26,10 +26,10 @@ const AddProductForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const { name, description, price, stock, color, images, size } = product;
+        const { name, description, price, stock, color, images, size, SKU, category, tag } = product;
 
         // Validate fields
-        if (!name || !description || !price || !stock || !images || !images.length) {
+        if (!name || !description || !price || !stock || !images || !images.length || !SKU || !category || !tag) {
             alert('Please fill all the required fields');
             return;
         }
@@ -49,6 +49,9 @@ const AddProductForm = () => {
                     color: color.split(','),
                     images: images.split(','),
                     size,
+                    SKU,
+                    category,
+                    tag
                 }),
             });
 
@@ -107,133 +110,147 @@ const AddProductForm = () => {
             {/* add products form  */}
             <div className="max-w-lg mx-auto mt-12 p-8 bg-white rounded-lg shadow-lg">
                 <h2 className="text-3xl font-bold text-center mb-6">Add Product</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-6">
-                        <label className="block text-lg font-medium text-gray-700">Product Name</label>
-                        <input
-                            type="text"
-                            name="name"
-                            placeholder='Enter the Name '
-                            value={product.name}
-                            onChange={handleChange}
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-lg font-medium text-gray-700">Description</label>
-                        <textarea
-                            name="description"
-                            value={product.description}
-                            placeholder='Enter Description of the Product'
-                            onChange={handleChange}
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                    <div className="mb-6 grid grid-cols-2 gap-6">
+                <form onSubmit={handleSubmit} className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Add New Product</h2>
+
+                    <div className="space-y-4">
                         <div>
-                            <label className="block text-lg font-medium text-gray-700">Price</label>
+                            <label className="block text-lg font-medium text-gray-700">Product Name</label>
                             <input
-                                type="number"
-                                name="price"
-                                value={product.price}
+                                type="text"
+                                name="name"
+                                placeholder="Enter the Name"
+                                value={product.name}
                                 onChange={handleChange}
-                                className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                                className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
                                 required
                             />
                         </div>
+
                         <div>
-                            <label className="block text-lg font-medium text-gray-700">Stock</label>
-                            <input
-                                type="number"
-                                name="stock"
-                                value={product.stock}
+                            <label className="block text-lg font-medium text-gray-700">Description</label>
+                            <textarea
+                                name="description"
+                                value={product.description}
+                                placeholder="Enter Description of the Product"
                                 onChange={handleChange}
-                                className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                                rows="4"
+                                className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
                                 required
                             />
                         </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-lg font-medium text-gray-700">Price</label>
+                                <input
+                                    type="number"
+                                    name="price"
+                                    value={product.price}
+                                    onChange={handleChange}
+                                    className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-lg font-medium text-gray-700">Stock</label>
+                                <input
+                                    type="number"
+                                    name="stock"
+                                    value={product.stock}
+                                    onChange={handleChange}
+                                    className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-lg font-medium text-gray-700">Colors (comma separated)</label>
+                            <input
+                                type="text"
+                                name="color"
+                                value={product.color}
+                                placeholder="Enter Colors separated by commas"
+                                onChange={handleChange}
+                                className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-lg font-medium text-gray-700">Images (comma separated URLs)</label>
+                            <input
+                                type="text"
+                                name="images"
+                                value={product.images}
+                                placeholder="Enter Image URLs separated by commas"
+                                onChange={handleChange}
+                                className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-lg font-medium text-gray-700">Size</label>
+                            <input
+                                type="text"
+                                name="size"
+                                value={product.size}
+                                placeholder="Enter Size of the Product"
+                                onChange={handleChange}
+                                className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-lg font-medium text-gray-700">SKU</label>
+                            <input
+                                type="text"
+                                name="SKU"
+                                value={product.SKU}
+                                placeholder="Enter SKU"
+                                onChange={handleChange}
+                                className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-lg font-medium text-gray-700">Category</label>
+                            <input
+                                type="text"
+                                name="category"
+                                value={product.category}
+                                placeholder="Enter categories separated by commas"
+                                onChange={handleChange}
+                                className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-lg font-medium text-gray-700">Tag</label>
+                            <select
+                                name="tag"
+                                value={product.tag}
+                                onChange={handleChange}
+                                className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="wallet">Wallet</option>
+                                <option value="gadgets">Gadgets</option>
+                                <option value="bags">Bags</option>
+                            </select>
+                        </div>
                     </div>
-                    <div className="mb-6">
-                        <label className="block text-lg font-medium text-gray-700">Colors (comma separated)</label>
-                        <input
-                            type="text"
-                            name="color"
-                            value={product.color}
-                            placeholder='Enter Colors separated by Commas'
-                            onChange={handleChange}
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-lg font-medium text-gray-700">Images (comma separated URLs)</label>
-                        <input
-                            type="text"
-                            name="images"
-                            value={product.images}
-                            placeholder='Enter Img URL separated By Commas'
-                            onChange={handleChange}
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                            required
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-lg font-medium text-gray-700">Size</label>
-                        <input
-                            type="text"
-                            name="size"
-                            value={product.size}
-                            onChange={handleChange}
-                            placeholder='Enter Size of the Product'
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-lg font-medium text-gray-700">SKU</label>
-                        <input
-                            type="text"
-                            name="SKU"
-                            value={product.SKU}
-                            onChange={handleChange}
-                            placeholder='Enter SKU'
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-lg font-medium text-gray-700">Category</label>
-                        <input
-                            type="text"
-                            name="category"
-                            value={product.category}
-                            onChange={handleChange}
-                            placeholder='Enter the Categories Separated by Commas'
-                            className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                        />
-                    </div>
-                    <div className="mb-6">
-                        <label className="block text-lg font-medium text-gray-700">Tag</label>
-                  
-                    </div>
-                    
-                    <select
-                        type="text"
-                        name="tag"
-                        value={product.tag}
-                        placeholder='Enter the Tag'
-                        onChange={handleChange}
-                        className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
-                    >
-                        <option value="user">Wallet</option>
-                        <option value="admin">Gadgets</option>
-                        <option value="admin">Bags</option>
-                    </select>
-                    <div className="text-center">
-                        <button type="submit" className="px-6 py-3 bg-blue-500 text-white rounded-md shadow-md hover:bg-blue-600 transition">
+
+                    <div className="mt-6 text-center">
+                        <button
+                            type="submit"
+                            className="px-6 py-3 bg-blue-500 text-white text-lg font-semibold rounded-lg shadow-md hover:bg-blue-600 transition"
+                        >
                             Add Product
                         </button>
                     </div>
                 </form>
+
             </div>
             {/* display products */}
             <div className="mt-12">
