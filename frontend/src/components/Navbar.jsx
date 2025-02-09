@@ -16,13 +16,15 @@ const Navbar = () => {
 
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                 {/* Logo Section */}
-                <div className="flex items-center space-x-4">
+                <Link 
+                to='/'
+                className="flex items-center space-x-4">
                     <img
                         className="w-36 md:w-48 h-auto object-contain"
                         src="https://www.dewnor.com/wp-content/uploads/2021/01/cropped-cropped-logo.png"
                         alt="Dewnor Logo"
                     />
-                </div>
+                </Link>
 
                 {/* Mobile Menu Button */}
                 <button

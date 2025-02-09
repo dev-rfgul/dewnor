@@ -30,7 +30,67 @@ const ProductDisplay = () => {
     }, [id]); // Ensure it re-fetches when `id` changes
 
 
-    if (!product) return <p>Loading...</p>;
+    if (!product) return (
+        <div className="max-w-5xl mx-auto bg-gray-100 p-6 md:p-8 rounded-lg">
+            {/* Product Layout */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+                {/* Left: Product Image */}
+                <div className="flex flex-col items-center">
+                    {/* Loading Skeleton for Image */}
+                    <div className="relative w-full max-w-[400px] sm:max-w-[500px] overflow-hidden bg-gray-300 animate-pulse rounded-lg">
+                        {/* Placeholder image */}
+                    </div>
+
+                    {/* Loading Skeleton for Thumbnail Images */}
+                    <div className="flex flex-wrap justify-center gap-3 mt-4">
+                        {Array(5).fill("").map((_, index) => (
+                            <div
+                                key={index}
+                                className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-300 animate-pulse rounded-lg"
+                            />
+                        ))}
+                    </div>
+                </div>
+
+                {/* Right: Product Details */}
+                <div>
+                    {/* Loading Skeleton for Text */}
+                    <div className="bg-gray-300 animate-pulse w-32 h-6 mb-4 rounded-lg" />
+                    <div className="bg-gray-300 animate-pulse w-20 h-6 mb-4 rounded-lg" />
+                    <div className="bg-gray-300 animate-pulse w-40 h-6 mb-4 rounded-lg" />
+                    <div className="bg-gray-300 animate-pulse w-20 h-6 mb-4 rounded-lg" />
+
+                    {/* Loading Skeleton for Description */}
+                    <div className="bg-gray-300 animate-pulse w-full h-16 mb-4 rounded-lg" />
+                    <div className="bg-gray-300 animate-pulse w-24 h-6 mb-4 rounded-lg" />
+
+                    {/* Quantity & Buttons Skeleton */}
+                    <div className="flex flex-wrap items-center gap-4 mt-4">
+                        <div className="w-14 h-10 bg-gray-300 animate-pulse rounded-lg" />
+                        <div className="bg-gray-300 animate-pulse w-32 h-10 rounded-lg" />
+                        <div className="bg-gray-300 animate-pulse w-32 h-10 rounded-lg" />
+                    </div>
+
+                    {/* Category, SKU, Tag Skeleton */}
+                    <div className="mt-4 space-y-2 text-gray-700">
+                        <div className="bg-gray-300 animate-pulse w-24 h-6 mb-2 rounded-lg" />
+                        <div className="bg-gray-300 animate-pulse w-24 h-6 mb-2 rounded-lg" />
+                        <div className="bg-gray-300 animate-pulse w-24 h-6 mb-2 rounded-lg" />
+                    </div>
+                </div>
+            </div>
+
+            {/* Description Skeleton */}
+            <div className="mt-8">
+                <div className="bg-gray-300 animate-pulse w-40 h-6 mb-4 rounded-lg" />
+                <div className="space-y-1">
+                    {Array(3).fill("").map((_, index) => (
+                        <div key={index} className="bg-gray-300 animate-pulse w-60 h-6 mb-2 rounded-lg" />
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
 
     const handleImageClick = (img) => {
         setMainImage(img);
@@ -47,6 +107,7 @@ const ProductDisplay = () => {
     return (
         <div className="max-w-5xl mx-auto bg-gray-100 p-6 md:p-8 rounded-lg">
             {/* Product Layout */}
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
                 {/* Left: Product Image */}
                 <div className="flex flex-col items-center">
@@ -56,7 +117,7 @@ const ProductDisplay = () => {
                         onMouseEnter={() => setIsZoomed(true)}
                         onMouseLeave={() => setIsZoomed(false)}
                         onMouseMove={handleMouseMove}
-                    >
+                    >   
                         <img
                             src={mainImage}
                             alt={product.name}
@@ -148,7 +209,6 @@ const ProductDisplay = () => {
             </div>
         </div>
     );
-
 };
 
 export default ProductDisplay;
