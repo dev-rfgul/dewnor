@@ -6,7 +6,7 @@ import cors from 'cors';
 import { connectDB } from './config/db.js';
 import userRoutes from './routes/user.routes.js';
 import productRoutes from './routes/product.routes.js';
-// import upload from './middleware/multer.js';
+import { cloudinaryConnect } from './config/cloudinary.js';
 
 
 
@@ -22,6 +22,7 @@ dotenv.config();
 app.use(cors(corsOption))
 
 connectDB();
+cloudinaryConnect();
 app.use(express.json());
 
 app.get('/test', cors(corsOption), (req, res) => {
@@ -44,6 +45,6 @@ app.use('/product', productRoutes);
 
 const port = process.env.LOCALHOST
 console.log(" hello the backend is running on port :", port)
-console.log(process.env.HELLO)
+
 app.listen(port)
 
