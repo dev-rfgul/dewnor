@@ -184,9 +184,6 @@ const ProductGrid = () => {
                 console.error("Error fetching products:", error);
                 setLoading(true); // Set loading to true in case of error
             } finally {
-                if (error) {
-                    setLoading(true); // Set loading to false regardless of success or failure
-                }
                 setLoading(false)
             }
         };
@@ -198,7 +195,7 @@ const ProductGrid = () => {
             <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">Our Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {loading
-                    ? Array.from({ length: 12 }).map((_, index) => (
+                    ? Array.from({ length: 10}).map((_, index) => (
                         <ProductCard key={index} loading />
                     ))
                     : products.map((product) => (
