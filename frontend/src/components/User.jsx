@@ -65,7 +65,7 @@ const User = () => {
     useEffect(() => {
         fetchUsers();
     }, []);
-    console.log(users)
+    console.log(JSON.stringify(users))
 
     const handleRoleChange = async (userId, newRole) => {
 

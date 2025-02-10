@@ -7,6 +7,7 @@ import ProductDisplay from './components/ProductDisplay'
 import Admin from './components/Admin'
 import AddProduct from './components/AddProducts'
 import User from './components/User'
+import Profile from './components/Profile'
 
 const App = () => {
   const user = JSON.parse(localStorage.getItem("user"))
@@ -22,6 +23,7 @@ const App = () => {
           <Route path='/signup' element={<Signup />} />
           <Route path='/login' element={<Login />} />
           <Route path='/product/:id' element={<ProductDisplay />} />
+          <Route path='/profile' element={<Profile />} />
 
           {/* Protected routes for users who are logged in */}
           {isUserLoggedIn ? (
@@ -33,7 +35,7 @@ const App = () => {
                   <Route path='/add-users' element={<User />} />
                 </>
               )}
-              {/* Add other protected routes for regular users if needed */}
+         
             </>
           ) : (
             // Redirect to login if not logged in
