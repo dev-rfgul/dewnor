@@ -68,10 +68,6 @@ router.put("/update-role", async (req, res) => {
         res.status(500).json({ message: "Server error", error });
     }
 });
-
-
-
-
 router.get('/get-users', async (req, res) => {
     try {
         const users = await userModel.find({})

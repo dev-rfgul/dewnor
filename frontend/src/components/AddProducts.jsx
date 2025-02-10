@@ -40,7 +40,7 @@ const ImageUploader = () => {
 
         // Send data to backend API
         try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/add-product`, {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/add-product`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ const ImageUploader = () => {
     const handleDelete = async (id) => {
         alert("are you sure you want to delete the product")
         try {
-            await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/delete-product/${id}`, {
+            await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/delete-product/${id}`, {
                 method: "DELETE",
             });
 
@@ -135,7 +135,7 @@ const ImageUploader = () => {
         try {
             // Upload all files concurrently using Promise.all
             const uploadPromises = formDataList.map((formData) =>
-                axios.post(`${import.meta.env.VITE_BACKEND_URL}/product/upload-img`, formData, {
+                axios.post(`${import.meta.env.VITE_BACKEND_URL}/admin/upload-img`, formData, {
                     headers: {
                         "Content-Type": "multipart/form-data",
                     },

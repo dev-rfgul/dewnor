@@ -6,6 +6,7 @@ import cors from 'cors';
 import { connectDB } from './config/db.js';
 import userRoutes from './routes/user.routes.js';
 import productRoutes from './routes/product.routes.js';
+import adminRoutes from './routes/admin.routes.js'
 import { cloudinaryConnect } from './config/cloudinary.js';
 
 
@@ -38,6 +39,7 @@ app.get('/', (req, res) => {
 })
 app.use('/user', userRoutes);
 app.use('/product', productRoutes);
+app.use('/admin', adminRoutes)
 
 
 
