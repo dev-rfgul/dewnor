@@ -1,14 +1,18 @@
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-import { useEffect, useState } from 'react';
+const ImageUploader = () => {
+    const [selectedFiles, setSelectedFiles] = useState([]);
+    const [uploadedImages, setUploadedImages] = useState([]);
+    const [loading, setLoading] = useState(false);
 
-const AddProductForm = () => {
     const [product, setProduct] = useState({
         name: '',
         description: '',
         price: '',
         stock: '',
         color: '',
-        images: '',
+        images: [],
         size: '',
         SKU: '',
         category: '',
@@ -26,10 +30,10 @@ const AddProductForm = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const { name, description, price, stock, color, images, size, SKU, category, tag } = product;
+        const { name, description, price, stock, color, size, SKU, category, tag } = product;
 
         // Validate fields
-        if (!name || !description || !price || !stock || !images || !images.length || !SKU || !category || !tag) {
+        if (!name || !description || !price || !stock || uploadedImages.length === 0 || !SKU || !category || !tag) {
             alert('Please fill all the required fields');
             return;
         }
@@ -47,7 +51,7 @@ const AddProductForm = () => {
                     price: parseFloat(price),
                     stock: parseInt(stock),
                     color: color.split(','),
-                    images: images.split(','),
+                    images: uploadedImages,
                     size,
                     SKU,
                     category,
@@ -64,10 +68,12 @@ const AddProductForm = () => {
                     price: '',
                     stock: '',
                     color: '',
-                    images: '',
+                    images: [],
                     size: '',
+                    SKU: '',
+                    category: '',
+                    tag: '',
                 });
-
             } else {
                 alert(data.message || 'Failed to add product');
             }
@@ -83,7 +89,7 @@ const AddProductForm = () => {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-products`);
             const data = await response.json();
             setProducts(data);
-            console.log(JSON.stringify(data))
+            // console.log(JSON.stringify(data))
         } catch (error) {
             console.error("Error fetching products:", error);
         }
@@ -105,8 +111,64 @@ const AddProductForm = () => {
             console.error("Error deleting product:", error);
         }
     };
+    // Handle file selection
+    const handleFileChange = (event) => {
+        const files = Array.from(event.target.files);
+        setSelectedFiles((prevFiles) => [...prevFiles, ...files]); // Append new files
+    };
+
+    // Handle image removal from selectedFiles
+    const removeImage = (fileName) => {
+        setSelectedFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
+    };
+
+    // Aggressive image upload: Upload all images concurrently
+    const handleUpload = async () => {
+        setLoading(true);
+
+        const formDataList = selectedFiles.map((file) => {
+            const formData = new FormData();
+            formData.append("image", file);
+            return formData;
+        });
+
+        try {
+            // Upload all files concurrently using Promise.all
+            const uploadPromises = formDataList.map((formData) =>
+                axios.post(`${import.meta.env.VITE_BACKEND_URL}/product/upload-img`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                })
+            );
+
+            const responses = await Promise.all(uploadPromises);
+
+            // Collect all successful uploaded URLs
+            const newUploadedImages = responses
+                .filter((response) => response.data.success)
+                .map((response) => response.data.urls)
+                .flat();
+            setUploadedImages((prevImages) => [
+                ...prevImages,
+                ...newUploadedImages,
+            ]); // Append new URLs
+            setSelectedFiles([]); // Clear selected files after upload
+        } catch (error) {
+            console.error("Error uploading images:", error);
+            alert("An error occurred while uploading images.");
+        } finally {
+            setLoading(false); // Reset loading state
+        }
+    };
+    console.log(uploadedImages)
+
     return (
         <>
+
+
+
+
             {/* add products form  */}
             <div className="max-w-lg mx-auto mt-12 p-8 bg-white rounded-lg shadow-lg">
                 <h2 className="text-3xl font-bold text-center mb-6">Add Product</h2>
@@ -177,17 +239,45 @@ const AddProductForm = () => {
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-lg font-medium text-gray-700">Images (comma separated URLs)</label>
+                        <div className="p-4">
+                            <label className="block text-lg font-medium text-gray-700">Images</label>
                             <input
-                                type="text"
-                                name="images"
-                                value={product.images}
-                                placeholder="Enter Image URLs separated by commas"
-                                onChange={handleChange}
+                                type="file"
+                                multiple
+                                onChange={handleFileChange}
                                 className="mt-2 w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500"
-                                required
                             />
+                            <button
+                                onClick={handleUpload}
+                                disabled={loading || selectedFiles.length === 0}
+                                className="bg-blue-500 text-white px-4 py-2 rounded disabled:bg-gray-300"
+                            >
+                                {loading ? "Uploading..." : "Upload Images"}
+                            </button>
+
+                            <div className="mt-4 flex flex-wrap gap-2">
+                                {selectedFiles.map((file, index) => (
+                                    <div key={index} className="relative">
+                                        <img
+                                            src={URL.createObjectURL(file)}
+                                            alt="Selected"
+                                            className="w-32 h-32 object-cover rounded"
+                                        />
+                                        <button
+                                            onClick={() => removeImage(file.name)}
+                                            className="absolute top-0 right-0 bg-red-500 text-white rounded-full p-1"
+                                        >
+                                            ×
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-4 flex flex-wrap gap-2">
+                                {uploadedImages.map((url, index) => (
+                                    <img key={index} src={url} alt="Uploaded" className="w-32 h-32 object-cover rounded" />
+                                ))}
+                            </div>
                         </div>
 
                         <div>
@@ -299,6 +389,6 @@ const AddProductForm = () => {
             </div>
         </>
     );
-}
+};
 
-export default AddProductForm;
+export default ImageUploader;

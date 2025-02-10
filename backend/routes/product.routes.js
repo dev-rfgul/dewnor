@@ -17,9 +17,6 @@ cloudinaryConnect();
 app.get('/test', (req, res) => {
     console.log("the test route from index.js")
     res.send("the test route from index.js")
-    console.log("Cloudinary API Key:", process.env.CLOUDINARY_API_KEY);
-    console.log("Cloudinary API Secret:", process.env.CLOUDINARY_API_SECRET);
-    console.log("Cloudinary Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
 })
 app.get('/get-products', (req, res) => {
     productModel.find({})
@@ -91,31 +88,30 @@ app.get('/get-product/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.post('/upload-img', upload.single('image'), async (req, res) => {
-    if (!req.file) {
+app.post('/upload-img', upload.array('image'), async (req, res) => {
+    if (!req.files || req.files.length === 0) {
         return res.status(400).json({
             success: false,
-            message: "No image file uploaded"
+            message: "No image files uploaded"
         });
     }
-
-    // Ensure that cloudinary is properly configured and accessible
     try {
-        const result = await cloudinary.uploader.upload(req.file.path);
+        const uploadPromises = req.files.map(file => cloudinary.uploader.upload(file.path));
+        const results = await Promise.all(uploadPromises);
+
         res.status(200).json({
             success: true,
-            message: "Image uploaded successfully",
-            url: result.secure_url
+            message: "Images uploaded successfully",
+            urls: results.map(result => result.secure_url)
         });
     } catch (error) {
         console.error(error);
         res.status(500).json({
             success: false,
-            message: "Error while uploading image"
+            message: "Error while uploading images"
         });
     }
 });
-
 
 
 export default app;
