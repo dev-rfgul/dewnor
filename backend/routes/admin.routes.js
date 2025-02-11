@@ -80,13 +80,27 @@ app.delete('/delete-product/:id', async (req, res) => {
 });
 
 
+
 //user routes
-app.put('/edit/:id', async (req, res) => {
+app.get('/get-product/:id', async (req, res) => {
     try {
-        const { name, description, price, stock, color, images, size } = req.body;
+        const id = req.params.id;
+        const product = await productModel.findById(id);
+        if (!product) {
+            return res.status(404).json({ message: "product not found" })
+        }
+        res.json({ message: "Product found", product });
+    }
+    catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+app.put('/edit-product/:id', async (req, res) => {
+    try {
+        const { name, description, price, stock, color, images, size, SKU,category,tag } = req.body;
         const updatedProduct = await productModel.findByIdAndUpdate(
             req.params.id,
-            { name, description, price, stock, color, images, size },
+            { name, description, price, stock, color, images, size , category, tag, SKU},
             { new: true, runValidators: true } // Return updated doc & validate
         );
 

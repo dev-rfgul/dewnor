@@ -6,6 +6,7 @@ import userModel from '../models/user.model.js';
 const router = express.Router();
 
 
+
 router.get('/test', (req, res) => {
     res.send('test route')
 })

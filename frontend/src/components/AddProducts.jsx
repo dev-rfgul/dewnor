@@ -163,18 +163,33 @@ const ImageUploader = () => {
     };
     console.log(uploadedImages)
 
+    const handleUpdate = (id) => {
+        console.log("handle  updated triggered", id)
+
+        const productToUpdate = products.find((product) => product._id === id);
+        if (productToUpdate) {
+            setProduct({
+                name: productToUpdate.name,
+                description: productToUpdate.description,
+                price: productToUpdate.price.toString(),
+                stock: productToUpdate.stock.toString(),
+                color: productToUpdate.color.join(', '),
+                images: productToUpdate.images,
+                size: productToUpdate.size,
+                SKU: productToUpdate.SKU,
+                category: productToUpdate.category,
+                tag: productToUpdate.tag,
+            });
+        }
+
+    }
     return (
         <>
-
-
-
-
             {/* add products form  */}
             <div className="max-w-lg mx-auto mt-12 p-8 bg-white rounded-lg shadow-lg">
                 <h2 className="text-3xl font-bold text-center mb-6">Add Product</h2>
                 <form onSubmit={handleSubmit} className="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-lg">
                     <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">Add New Product</h2>
-
                     <div className="space-y-4">
                         <div>
                             <label className="block text-lg font-medium text-gray-700">Product Name</label>
@@ -377,8 +392,13 @@ const ImageUploader = () => {
                                 </div>
                                 <button
                                     onClick={() => { handleDelete(product._id) }}
-                                    className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 transition">
+                                    className="bg-red-500 text-white px-6 py-3 rounded-md hover:bg-red-600 transition">
                                     Delete Product
+                                </button>
+                                <button
+                                    onClick={() => { handleUpdate(product._id) }}
+                                    className="bg-yellow-500 text-white px-6 py-3 rounded-md hover:bg-yellow-600 transition">
+                                    Edit Product
                                 </button>
                             </div>
                         ))

@@ -21,6 +21,9 @@ var corsOption = {
 const app = express();
 dotenv.config();
 app.use(cors(corsOption))
+app.use(express.json({ limit: '10mb' })); // Increase limit to 10MB
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
+
 
 connectDB();
 cloudinaryConnect();
