@@ -13,6 +13,18 @@ const app = express();
 cloudinaryConnect();
 
 
+const uploadImgsToCloudinary = async (files) => {
+    try {
+        const uploadPromises = files.map(file => cloudinary.uploader.upload(file.path));
+        const results = await Promise.all(uploadPromises);
+        return results.map(result => result.secure_url);  // Return URLs of uploaded images
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error while uploading images');  // Throw an error to be handled in the route
+    }
+}
+
+
 
 app.get('/test', (req, res) => {
     res.send("the route is working ")
@@ -27,38 +39,24 @@ app.post('/upload-img', upload.array('image'), async (req, res) => {
             message: "No image files uploaded"
         });
     }
-    try {
-        const uploadPromises = req.files.map(file => cloudinary.uploader.upload(file.path));
-        const results = await Promise.all(uploadPromises);
-
-        res.status(200).json({
-            success: true,
-            message: "Images uploaded successfully",
-            urls: results.map(result => result.secure_url)
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: "Error while uploading images"
-        });
-    }
 });
 app.post('/add-product', async (req, res) => {
     const { name, description, price, stock, color, images, size, SKU, category, tag } = req.body;
+    const imageUrls = req.files.length > 0 ? await uploadImgsToCloudinary(req.files) : [];
+
+
     const product = new productModel({
         name,
         description,
         price,
         stock,
         color,
-        images,
+        images: imageUrls,
         size,
         SKU,
         category,
         tag,
     })
-
 
 
     await product.save();
@@ -95,13 +93,25 @@ app.get('/get-product/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.put('/edit-product/:id', async (req, res) => {
+app.put('/edit-product/:id', upload.array('image'), async (req, res) => {
     try {
-        const { name, description, price, stock, color, images, size, SKU,category,tag } = req.body;
+        const { name, description, price, stock, color, size, SKU, category, tag } = req.body;
+
+        console.log('Request body:', req.body);
+        console.log('Request files:', req.files);
+
+        let imageUrls = req.body.images || [];
+        if (req.files && req.files.length > 0) {
+            const uploadedImages = await uploadImgsToCloudinary(req.files);
+            imageUrls = [...imageUrls, ...uploadedImages];
+        }
+
+
+
         const updatedProduct = await productModel.findByIdAndUpdate(
             req.params.id,
-            { name, description, price, stock, color, images, size , category, tag, SKU},
-            { new: true, runValidators: true } // Return updated doc & validate
+            { name, description, price, stock, color, images: imageUrls, size, category, tag, SKU },
+            { new: true, runValidators: true }
         );
 
         if (!updatedProduct) {
@@ -110,9 +120,11 @@ app.put('/edit-product/:id', async (req, res) => {
 
         res.status(200).json({ message: "Product updated successfully", product: updatedProduct });
     } catch (error) {
-        res.status(500).json({ message: "Error while updating the product", error });
+        console.error('Error while updating product:', error);
+        res.status(500).json({ message: "Error while updating the product", error: error.message });
     }
 });
+
 app.post('/add-user', async (req, res) => {
     const { name, email, password, role } = req.body;
     const user = new userModel({
@@ -126,3 +138,4 @@ app.post('/add-user', async (req, res) => {
 })
 
 export default app;
+

@@ -28,7 +28,7 @@ const ProductDisplay = () => {
 
         fetchProduct();
     }, [id]); // Ensure it re-fetches when `id` changes
-
+console.log(product)
 
     if (!product) return (
         <div className="max-w-5xl mx-auto bg-gray-100 p-6 md:p-8 rounded-lg">
@@ -191,6 +191,8 @@ const ProductDisplay = () => {
                         <p><b>Category:</b> {product.category}</p>
                         <p><b>SKU:</b> {product.SKU}</p>
                         <p><b>Tag:</b> {product.tag}</p>
+                        <p><b>color:</b> {product.color}</p>
+                        <p><b>size:</b> {product.size}</p>
                     </div>
                 </div>
             </div>
