@@ -18,7 +18,7 @@ app.get('/test', (req, res) => {
 })
 app.get('/get-products', (req, res) => {
     productModel.find({})
-        .then(users => res.json(users))
+        .then(products => res.json(products))
         .catch(error => res.json(error))
 })
 app.get('/get-product/:id', async (req, res) => {

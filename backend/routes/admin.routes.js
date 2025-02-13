@@ -13,17 +13,18 @@ const app = express();
 cloudinaryConnect();
 
 
+// Helper function to upload images to Cloudinary
 const uploadImgsToCloudinary = async (files) => {
     try {
-        const uploadPromises = files.map(file => cloudinary.uploader.upload(file.path));
-        const results = await Promise.all(uploadPromises);
-        return results.map(result => result.secure_url);  // Return URLs of uploaded images
+        const uploadPromises = files.map(file =>
+            cloudinary.uploader.upload(file.path)  // Uploading each file to Cloudinary
+        );
+        const results = await Promise.all(uploadPromises);  // Wait for all uploads to finish
+        return results.map(result => result.secure_url);  // Return the secure URLs of uploaded images
     } catch (error) {
-        console.error(error);
-        throw new Error('Error while uploading images');  // Throw an error to be handled in the route
+        console.error('Error uploading images:', error);
     }
-}
-
+};
 
 
 app.get('/test', (req, res) => {
@@ -31,37 +32,44 @@ app.get('/test', (req, res) => {
 })
 
 
-//product routes
-app.post('/upload-img', upload.array('image'), async (req, res) => {
-    if (!req.files || req.files.length === 0) {
-        return res.status(400).json({
-            success: false,
-            message: "No image files uploaded"
+
+
+
+app.post('/add-product', upload.array('image'), async (req, res) => {
+    try {
+        // Extract product details from the form data
+        const { name, description, price, stock, color, size, SKU, category, tag } = req.body;
+
+        // Handle file uploads
+        const imageUrls = req.files && Array.isArray(req.files) && req.files.length > 0
+            ? await uploadImgsToCloudinary(req.files)  // Upload the images to Cloudinary
+            : [];
+
+        // Create the product object
+        const product = new productModel({
+            name,
+            description,
+            price,
+            stock,
+            color,
+            images: imageUrls,  // The uploaded image URLs
+            size,
+            SKU,
+            category,
+            tag,
         });
+
+        // Save the product to the database
+        await product.save();
+
+        // Send a success response
+        res.status(200).json({ message: 'Product created successfully', product });
+    } catch (error) {
+        console.error('Error creating product:', error);
+        res.status(500).json({ message: 'Error creating product', error: error.message });
     }
 });
-app.post('/add-product', async (req, res) => {
-    const { name, description, price, stock, color, images, size, SKU, category, tag } = req.body;
-    const imageUrls = req.files.length > 0 ? await uploadImgsToCloudinary(req.files) : [];
 
-
-    const product = new productModel({
-        name,
-        description,
-        price,
-        stock,
-        color,
-        images: imageUrls,
-        size,
-        SKU,
-        category,
-        tag,
-    })
-
-
-    await product.save();
-    res.status(200).json({ message: "Product created Successfully", product })
-})
 app.delete('/delete-product/:id', async (req, res) => {
     try {
         const id = req.params.id;
