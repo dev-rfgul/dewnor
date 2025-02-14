@@ -1,300 +1,17 @@
 
-// import React, { useState, useEffect } from "react";
-// import { useParams } from 'react-router-dom';
-// import { FiEdit } from "react-icons/fi";
-
-// const ProductDisplay = () => {
-//     const { id } = useParams();
-//     const [product, setProduct] = useState(null);
-//     const [mainImage, setMainImage] = useState("");
-//     const [editableFields, setEditableFields] = useState({});
-//     const [images, setImages] = useState([]); // Store the list of images
-
-//     const handleAddImage = () => {
-//         // Create an input element to select files
-//         const input = document.createElement("input");
-//         input.type = "file";
-//         input.accept = "image/*";
-
-//         input.onchange = (e) => {
-//             const file = e.target.files[0];
-//             if (file) {
-//                 const reader = new FileReader();
-//                 reader.onload = () => {
-//                     // Update the images state with the new image URL
-//                     setImages([...images, reader.result]);
-//                 };
-//                 reader.readAsDataURL(file);
-//             }
-//         };
-
-//         input.click();
-//     };
-
-//     useEffect(() => {
-//         const fetchProduct = async () => {
-//             try {
-//                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/get-product/${id}`);
-//                 const data = await response.json();
-//                 if (data.product) {
-//                     setProduct(data.product);
-//                     setMainImage(data.product.images[0]);
-//                     setEditableFields({
-//                         name: data.product.name,
-//                         price: data.product.price,
-//                         oldPrice: data.product.oldPrice,
-//                         description: data.product.description,
-//                         stock: data.product.stock,
-//                         category: data.product.category,
-//                         SKU: data.product.SKU,
-//                         tag: data.product.tag
-//                     });
-//                     setImages(data.product.images); // Initialize images array
-//                 } else {
-//                     console.error("Product not found");
-//                 }
-//             } catch (error) {
-//                 console.error("Error fetching product:", error);
-//             }
-//         };
-//         fetchProduct();
-//     }, [id]);
-
-//     const handleEdit = (field, value) => {
-//         setEditableFields(prev => ({ ...prev, [field]: value }));
-//     };
-
-//     const handleImageChange = (index, e) => {
-//         const file = e.target.files[0];
-//         const newImages = [...images];
-//         const reader = new FileReader();
-
-//         reader.onloadend = () => {
-//             newImages[index] = reader.result; // Update the image at the clicked index
-//             setImages(newImages);
-//         };
-
-//         if (file) {
-//             reader.readAsDataURL(file); // Read the file as data URL
-//         }
-//     };
-
-//     const handleUpdateProduct = async () => {
-//         console.log("btn clicked");
-//         console.log(editableFields)
-//         try {
-//             console.log("execution started");
-//             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/edit-product/67ab8813a2be23eca6119f16`, {
-//                 method: 'PUT',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({
-//                     ...editableFields,
-//                     images, // Include the images array in the update
-//                 }),
-//             });
-
-//             if (response.ok) {
-//                 alert('Product updated successfully');
-//                 const updatedProduct = await response.json(); // Assuming backend returns updated product details
-//                 setProduct(updatedProduct.product); // Update state with the latest product details
-//                 setMainImage(updatedProduct.product.images[0]); // Update main image
-//                 setImages(updatedProduct.product.images); // Update images array
-//             } else {
-//                 console.error('Failed to update product');
-//             }
-//         } catch (error) {
-//             console.error('Error updating product:', error);
-//         }
-//     };
-
-
-//     if (!product) return (
-//         <div className="max-w-5xl mx-auto bg-gray-100 p-6 md:p-8 rounded-lg">
-//             {/* Loading Skeleton */}
-//             {/* Same skeleton code as before */}
-//         </div>
-//     );
-
-
-
-// return (
-//     <div className="max-w-5xl mx-auto bg-gray-100 p-6 md:p-8 rounded-lg">
-//         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-//             {/* Left: Product Image */}
-//             <div className="flex flex-col items-center">
-//                 <div className="relative w-full max-w-[400px] sm:max-w-[500px]">
-//                     <img
-//                         src={mainImage}
-//                         alt={editableFields.name}
-//                         className="w-full h-auto rounded-lg shadow-md object-cover"
-//                     />
-//                     <label className="absolute top-2 right-2 bg-gray-700 text-white p-2 rounded-full cursor-pointer">
-//                         <FiEdit />
-//                         <input
-//                             type="file"
-//                             accept="image/*"
-//                             className="hidden"
-//                             onChange={(e) => handleImageChange(0, e)} // Update the main image
-//                         />
-//                     </label>
-//                 </div>
-//                 {/* Thumbnail Images */}
-//                 <div className="flex flex-wrap justify-center gap-3 mt-4">
-//                     {images.map((image, index) => (
-//                         <div key={index} className="relative">
-//                             <img
-//                                 src={image}
-//                                 alt={`product-image-${index}`}
-//                                 className="w-16 h-16 sm:w-20 sm:h-20 object-cover rounded-lg"
-//                             />
-//                             <label className="absolute top-1 right-1 bg-gray-700 text-white p-2 rounded-full cursor-pointer">
-//                                 <FiEdit />
-//                                 <input
-//                                     type="file"
-//                                     accept="image/*"
-//                                     className="hidden"
-//                                     onChange={(e) => handleImageChange(index, e)} // Update respective image
-//                                 />
-//                             </label>
-//                         </div>
-//                     ))}
-//                     {/* Add Image Button */}
-//                     <div className="flex justify-center w-full mt-4">
-//                         <button
-//                             onClick={handleAddImage}
-//                             className="bg-blue-500 text-white py-2 px-4 rounded-lg"
-//                         >
-//                             Add More Images
-//                         </button>
-//                     </div>
-//                 </div>
-//             </div>
-
-//             {/* Right: Product Details */}
-//             <div>
-//                 {/* name */}
-//                 <div className="flex items-center">
-//                     <input
-//                         type="text"
-//                         value={editableFields.name}
-//                         onChange={(e) => handleEdit("name", e.target.value)}
-//                         className="text-2xl sm:text-3xl font-bold text-gray-900 border-b border-gray-400 outline-none"
-//                     />
-//                     <FiEdit className="ml-2 cursor-pointer" />
-//                 </div>
-//                 {/* description */}
-//                 <textarea
-//                     value={editableFields.description}
-//                     onChange={(e) => handleEdit("description", e.target.value)}
-//                     className="w-full mt-4 border border-gray-300 p-2 rounded outline-none"
-//                 />
-//                 {/* price */}
-//                 <div className="flex items-center space-x-2 mt-2">
-//                     <p className="text-red-500 text-lg font-semibold">-60%</p>
-//                     <input
-//                         type="text"
-//                         value={editableFields.oldPrice}
-//                         onChange={(e) => handleEdit("oldPrice", e.target.value)}
-//                         className="text-gray-500 line-through text-lg border-b border-gray-400 outline-none"
-//                     />
-//                     <input
-//                         type="text"
-//                         value={editableFields.price}
-//                         onChange={(e) => handleEdit("price", e.target.value)}
-//                         className="text-gray-900 font-bold text-xl border-b border-gray-400 outline-none"
-//                     />
-//                 </div>
-//                 {/* stock */}
-//                 <p className="font-bold text-gray-900 mt-4">Stock:
-//                     <input
-//                         type="text"
-//                         value={editableFields.stock}
-//                         onChange={(e) => handleEdit("stock", e.target.value)}
-//                         className="ml-2 border-b border-gray-400 outline-none"
-//                     />
-//                 </p>
-//                 {/* color */}
-//                 <p className="font-bold text-gray-900 mt-4">color:
-//                     <input
-//                         type="text"
-//                         value={editableFields.color}
-//                         onChange={(e) => handleEdit("color", e.target.value)}
-//                         className="ml-2 border-b border-gray-400 outline-none"
-//                     />
-//                 </p>
-
-//                 {/* category */}
-//                 <p>Category:
-//                     <input
-//                         type="text"
-//                         value={editableFields.category}
-//                         onChange={(e) => handleEdit("category", e.target.value)}
-//                         className="border-b border-gray-400 outline-none"
-//                     />
-//                 </p>
-//                 {/* sku */}
-//                 <p>SKU:
-//                     <input
-//                         type="text"
-//                         value={editableFields.SKU}
-//                         onChange={(e) => handleEdit("SKU", e.target.value)}
-//                         className="border-b border-gray-400 outline-none"
-//                     />
-//                 </p>
-//                 {/* tag */}
-//                 <p>Tag:
-//                     <input
-//                         type="text"
-//                         value={editableFields.tag}
-//                         onChange={(e) => handleEdit("tag", e.target.value)}
-//                         className="border-b border-gray-400 outline-none"
-//                     />
-//                 </p>
-
-//             </div>
-//         </div>
-
-//         {/* Update Product Button */}
-//         <div className="mt-6 flex justify-end">
-//             <button
-//                 onClick={handleUpdateProduct}
-//                 className="bg-blue-500 text-white py-2 px-4 rounded-lg"
-//             >
-//                 Update Product
-//             </button>
-//         </div>
-//     </div>
-// );
-
-// };
-
-// export default ProductDisplay;
-
-
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-
 
 const EditProduct = () => {
     const { id } = useParams();
     const [product, setProduct] = useState(null);
-    const [selectedFiles, setSelectedFiles] = useState([]); // For new images
+    const [selectedFiles, setSelectedFiles] = useState([]);
     const [loading, setLoading] = useState(false);
 
     const [editableFields, setEditableFields] = useState({
-        name: '',
-        price: '',
-        oldPrice: '',
-        description: '',
-        stock: '',
-        category: '',
-        SKU: '',
-        tag: '',
+        name: '', price: '', color:'',description: '', stock: '', category: '', SKU: '', tag: '',
     });
-    const [images, setImages] = useState([]); // Existing product images
+    const [images, setImages] = useState([]);
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -306,16 +23,14 @@ const EditProduct = () => {
                     setEditableFields({
                         name: data.product.name,
                         price: data.product.price,
-                        oldPrice: data.product.oldPrice,
+                        color:data.product.color,
                         description: data.product.description,
                         stock: data.product.stock,
                         category: data.product.category,
                         SKU: data.product.SKU,
                         tag: data.product.tag,
                     });
-                    setImages(data.product.images); // Set existing images
-                } else {
-                    console.error("Product not found");
+                    setImages(data.product.images || []);
                 }
             } catch (error) {
                 console.error("Error fetching product:", error);
@@ -325,59 +40,48 @@ const EditProduct = () => {
     }, [id]);
 
     const handleEdit = (field, value) => {
-        setEditableFields((prev) => ({ ...prev, [field]: value }));
+        setEditableFields(prev => ({
+            ...prev,
+            [field]: field === "price" || field === "stock" ? (value === "" ? "" : parseInt(value, 10) || "") : value
+        }));
     };
 
-    // Handle file selection
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
-        setSelectedFiles((prev) => [...prev, ...files]);
+        const previews = files.map(file => URL.createObjectURL(file));
+        setSelectedFiles(prev => [...prev, ...files]);
     };
 
-    // Remove an image
     const handleRemoveImage = (index) => {
-        setImages((prev) => prev.filter((_, i) => i !== index));
+        setImages(prev => prev.filter((_, i) => i !== index));
     };
 
-    // Update existing images
-    const handleImageUpdate = (event, index) => {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        const updatedImages = [...images];
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            updatedImages[index] = reader.result;
-            setImages(updatedImages);
-        };
-        reader.readAsDataURL(file);
+    const handleRemoveSelectedImage = (index) => {
+        setSelectedFiles(prev => prev.filter((_, i) => i !== index));
     };
 
-    // Submit updated product
     const handleUpdateProduct = async () => {
         setLoading(true);
         const formData = new FormData();
-
-        // Append editable fields
-        Object.entries(editableFields).forEach(([key, value]) => {
-            formData.append(key, value);
-        });
-
-        // Append new images
-        selectedFiles.forEach((file) => formData.append('image', file));
+        // Add editable fields
+        Object.entries(editableFields).forEach(([key, value]) => formData.append(key, value));
+        
+        // Combine the old images with new images
+        images.forEach(image => formData.append('images', image)); // Add old images first
+        selectedFiles.forEach(file => formData.append('images', file)); // Add new images
 
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/edit-product/${id}`, {
                 method: 'PUT',
-                body: formData, // FormData for handling images
+                body: formData,
             });
 
             if (response.ok) {
                 alert('Product updated successfully');
                 const updatedProduct = await response.json();
                 setProduct(updatedProduct.product);
-                setImages(updatedProduct.product.images); // Update images state
-                setSelectedFiles([]); // Clear selected images
+                setImages(updatedProduct.product.images);
+                setSelectedFiles([]);
             } else {
                 console.error('Failed to update product');
             }
@@ -394,7 +98,6 @@ const EditProduct = () => {
         <div className="max-w-5xl mx-auto bg-gray-100 p-6 md:p-8 rounded-lg">
             <h2 className="text-lg font-bold mb-4">Edit Product</h2>
 
-            {/* Editable Fields */}
             {Object.entries(editableFields).map(([key, value]) => (
                 <input
                     key={key}
@@ -407,34 +110,36 @@ const EditProduct = () => {
                 />
             ))}
 
-            {/* Existing Images */}
             <div className="flex flex-wrap gap-4">
                 {images.map((image, index) => (
                     <div key={index} className="relative">
                         <img src={image} alt="Product" className="w-24 h-24 object-cover rounded-lg" />
-                        <button
-                            onClick={() => handleRemoveImage(index)}
-                            className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded"
-                        >
-                            X
-                        </button>
+                        <button onClick={() => handleRemoveImage(index)}
+                            className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded">X</button>
                     </div>
                 ))}
             </div>
 
-            {/* New Image Upload */}
             <input type="file" multiple onChange={handleFileChange} className="my-3" />
+
+            <div className="flex flex-wrap gap-4 mt-3">
+                {selectedFiles.map((file, index) => (
+                    <div key={index} className="relative">
+                        <img src={URL.createObjectURL(file)} alt="Preview" className="w-24 h-24 object-cover rounded-lg" />
+                        <button onClick={() => handleRemoveSelectedImage(index)}
+                            className="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded">X</button>
+                    </div>
+                ))}
+            </div>
 
             <button
                 onClick={handleUpdateProduct}
-                className="bg-blue-500 text-white p-2 rounded"
-                disabled={loading}
-            >
+                className="bg-blue-500 text-white p-2 rounded mt-4"
+                disabled={loading}>
                 {loading ? "Updating..." : "Update Product"}
             </button>
         </div>
     );
+};
 
-}
-
-export default EditProduct
+export default EditProduct;

@@ -101,7 +101,7 @@ app.get('/get-product/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.put('/edit-product/:id', upload.array('image'), async (req, res) => {
+app.put('/edit-product/:id', upload.array('images',5), async (req, res) => {
     try {
         const { name, description, price, stock, color, size, SKU, category, tag } = req.body;
 

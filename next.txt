@@ -1,3 +1,7 @@
-adding imgs are not being uploaded
-edit product: the imgs are not being uploaded through cloudinary 
-login through jwt
+
+
+1:edit product func:
+    set input types , 
+    add more imgs btn 
+
+2:login through jwt

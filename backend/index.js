@@ -11,6 +11,7 @@ import { cloudinaryConnect } from './config/cloudinary.js';
 
 
 
+
 var corsOption = {
     // origin: process.env.FRONT_END_URL,
     origin: "*",
