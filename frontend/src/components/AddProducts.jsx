@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { FaTrash, FaEdit } from "react-icons/fa";
@@ -5,6 +6,7 @@ import { Link } from 'react-router-dom';
 
 const ImageUploader = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
+    const [selectedColors, setSelectedColors] = useState([])
     const [loading, setLoading] = useState(false);
     const [product, setProduct] = useState({
         name: '', description: '', price: '', stock: '',
@@ -23,6 +25,21 @@ const ImageUploader = () => {
             console.error("Error fetching products:", error);
         }
     };
+    console.log(products)
+
+    const handleColorChange = (e) => {
+        const newColor = e.target.value.trim(); // Remove any accidental spaces
+
+        // Ensure the color is not empty and is a valid hex color
+        if (newColor && newColor !== "#" && !selectedColors.includes(newColor)) {
+            setSelectedColors([...selectedColors, newColor]);
+        }
+    };
+
+    console.log(selectedColors)
+    const removeColor = (color) => {
+        setSelectedColors(selectedColors.filter((c) => c !== color));
+    };
 
     const handleChange = (e) => {
         setProduct({ ...product, [e.target.name]: e.target.value });
@@ -32,6 +49,7 @@ const ImageUploader = () => {
         const files = Array.from(event.target.files);
         setSelectedFiles((prevState) => [...prevState, ...files]);
     };
+
 
     const handleRemoveImage = (index) => {
         setSelectedFiles(selectedFiles.filter((_, i) => i !== index));
@@ -43,8 +61,11 @@ const ImageUploader = () => {
         const formData = new FormData();
         Object.entries(product).forEach(([key, value]) => {
             formData.append(key, value);
+
         });
         selectedFiles.forEach((file) => formData.append('image', file));
+        selectedColors.forEach((color) => formData.append('color', color))
+
 
         try {
             const response = await axios.post(
@@ -60,7 +81,9 @@ const ImageUploader = () => {
             console.error('Error submitting product:', error);
         } finally {
             setLoading(false);
+            console.log(formData)
         }
+
     };
 
     return (
@@ -69,7 +92,7 @@ const ImageUploader = () => {
             <div className="bg-white p-8 rounded-lg shadow-lg">
                 <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Add Product</h2>
                 <form onSubmit={handleSubmit} className="space-y-4">
-                    {["name", "description", "price", "stock", "color", "size", "SKU", "category"].map((field) => (
+                    {["name", "description", "price", "stock", , "size", "SKU", "category"].map((field) => (
                         <div key={field}>
                             <label className="block text-lg font-medium text-gray-700">
                                 {field.charAt(0).toUpperCase() + field.slice(1)}
@@ -85,6 +108,28 @@ const ImageUploader = () => {
                             />
                         </div>
                     ))}
+                    <div>
+                        <label htmlFor="color">color</label>
+                        <input type="color"
+                            onChange={handleColorChange} />
+
+                        <div className="mt-3 flex flex-wrap gap-2">
+                            {selectedColors.map((color, index) => (
+                                <div key={index} className="flex items-center space-x-2 p-2 border rounded-lg">
+                                    <span className="block w-6 h-6 rounded-full" style={{ backgroundColor: color }}></span>
+                                    <span className="text-sm font-medium">{color}</span>
+                                    <button
+                                        type="button"
+                                        onClick={() => removeColor(color)}
+                                        className="text-red-500 hover:text-red-700 font-semibold"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                    </div>
 
                     {/* Tag Dropdown */}
                     <div>
@@ -143,8 +188,6 @@ const ImageUploader = () => {
                     </div>
                 </form>
             </div>
-
-            {/* Product List */}
             <div className="mt-12">
                 <h1 className="text-3xl font-bold text-center mb-8">Product List</h1>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

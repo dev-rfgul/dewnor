@@ -36,38 +36,44 @@ app.get('/test', (req, res) => {
 
 app.post('/add-product', upload.array('image'), async (req, res) => {
     try {
-        // Extract product details from the form data
+        console.log("Received body:", req.body); // Debugging
+
         const { name, description, price, stock, color, size, SKU, category, tag } = req.body;
 
-        // Handle file uploads
-        const imageUrls = req.files && Array.isArray(req.files) && req.files.length > 0
-            ? await uploadImgsToCloudinary(req.files)  // Upload the images to Cloudinary
+        if (!name || !price || !stock) {
+            return res.status(400).json({ message: 'Name, price, and stock are required' });
+        }
+
+        // Ensure `color` is an array, remove empty values
+        const colors = Array.isArray(color) 
+            ? color.map(c => c.trim()).filter(c => c !== "") 
             : [];
 
-        // Create the product object
+        const imageUrls = req.files?.length ? await uploadImgsToCloudinary(req.files) : [];
+
         const product = new productModel({
             name,
             description,
-            price,
-            stock,
-            color,
-            images: imageUrls,  // The uploaded image URLs
+            price: Number(price),
+            stock: Number(stock),
+            color: colors,
+            images: imageUrls,
             size,
             SKU,
             category,
             tag,
         });
 
-        // Save the product to the database
         await product.save();
-
-        // Send a success response
-        res.status(200).json({ message: 'Product created successfully', product });
+        res.status(201).json({ message: 'Product created successfully', product });
     } catch (error) {
         console.error('Error creating product:', error);
-        res.status(500).json({ message: 'Error creating product', error: error.message });
+        res.status(500).json({ message: 'Internal Server Error', error: error.message });
     }
 });
+
+
+
 app.delete('/delete-product/:id', async (req, res) => {
     try {
         const id = req.params.id;
