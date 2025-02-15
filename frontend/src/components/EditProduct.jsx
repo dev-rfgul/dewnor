@@ -7,9 +7,10 @@ const EditProduct = () => {
     const [product, setProduct] = useState(null);
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [selectedColors, setSelectedColors] = useState([]);
 
     const [editableFields, setEditableFields] = useState({
-        name: '', price: '', color: '', description: '', stock: '', size: '', category: '', SKU: '', tag: '',
+        name: '', price: '', description: '', stock: '', size: '', category: '', SKU: '', tag: '',
     });
     const [images, setImages] = useState([]);
 
@@ -23,7 +24,6 @@ const EditProduct = () => {
                     setEditableFields({
                         name: data.product.name,
                         price: data.product.price,
-                        color: data.product.color,
                         description: data.product.description,
                         stock: data.product.stock,
                         category: data.product.category,
@@ -39,6 +39,21 @@ const EditProduct = () => {
         };
         fetchProduct();
     }, [id]);
+
+    const handleColorChange = (e) => {
+        const newColor = e.target.value.trim(); // Remove any accidental spaces
+
+        // Ensure the color is not empty and is a valid hex color
+        if (newColor && newColor !== "#" && !selectedColors.includes(newColor)) {
+            setSelectedColors([...selectedColors, newColor]);
+        }
+    };
+
+    console.log(selectedColors)
+    const removeColor = (color) => {
+        setSelectedColors(selectedColors.filter((c) => c !== color));
+    };
+
 
     const handleEdit = (field, value) => {
         setEditableFields(prev => ({
@@ -70,6 +85,7 @@ const EditProduct = () => {
         // Combine the old images with new images
         images.forEach(image => formData.append('images', image)); // Add old images first
         selectedFiles.forEach(file => formData.append('images', file)); // Add new images
+        formData.append('color', selectedColors)
 
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/edit-product/${id}`, {
@@ -116,6 +132,29 @@ const EditProduct = () => {
                 </div>
 
             ))}
+            <div className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <label htmlFor="color" className="block text-gray-700 font-medium mb-1"> color</label>
+                <input type="color"
+
+                    onChange={handleColorChange} />
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                    {selectedColors.map((color, index) => (
+                        <div key={index} className="flex items-center space-x-2 p-2 border rounded-lg">
+                            <span className="block w-6 h-6 rounded-full" style={{ backgroundColor: color }}></span>
+                            <span className="text-sm font-medium">{color}</span>
+                            <button
+                                type="button"
+                                onClick={() => removeColor(color)}
+                                className="text-red-500 hover:text-red-700 font-semibold"
+                            >
+                                ✕
+                            </button>
+                        </div>
+                    ))}
+                </div>
+
+            </div>
 
             <div className="flex flex-wrap gap-4">
                 {images.map((image, index) => (

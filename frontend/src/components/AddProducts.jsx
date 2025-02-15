@@ -86,6 +86,28 @@ const ImageUploader = () => {
 
     };
 
+    const handleDelete = async (id) => {
+        const confirmDelete = window.confirm("Do you want to delete this product?");
+        if (!confirmDelete) return; // Stop execution if user cancels
+
+        try {
+            const response = await axios.delete(
+                `${import.meta.env.VITE_BACKEND_URL}/admin/delete-product/${id}`
+            );
+            console.log(response)
+
+            if (response.status === 200) { 
+                alert("Product deleted successfully");
+            } else {
+                alert("Failed to delete product");
+            }
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            alert("An error occurred while deleting the product");
+        }
+    };
+
+
     return (
         <div className="max-w-4xl mx-auto p-6">
             {/* Add Product Form */}
@@ -108,8 +130,8 @@ const ImageUploader = () => {
                             />
                         </div>
                     ))}
-                    <div>
-                        <label htmlFor="color">color</label>
+                    <label htmlFor="color" className="block text-lg font-medium text-gray-700" >Select a color</label>
+                    <div className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
                         <input type="color"
                             onChange={handleColorChange} />
 
@@ -221,7 +243,10 @@ const ImageUploader = () => {
                                                 EDIT
                                             </button>
                                         </Link>
-                                        <button className="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow-md hover:bg-red-700 transition-all">
+                                        <button
+                                            onClick={() => { handleDelete(product._id) }}
+
+                                            className="w-1/2 bg-red-600 text-white py-2 rounded-lg shadow-md hover:bg-red-700 transition-all">
                                             Delete
                                         </button>
                                     </div>

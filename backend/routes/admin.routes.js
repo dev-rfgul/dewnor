@@ -45,8 +45,8 @@ app.post('/add-product', upload.array('image'), async (req, res) => {
         }
 
         // Ensure `color` is an array, remove empty values
-        const colors = Array.isArray(color) 
-            ? color.map(c => c.trim()).filter(c => c !== "") 
+        const colors = Array.isArray(color)
+            ? color.map(c => c.trim()).filter(c => c !== "")
             : [];
 
         const imageUrls = req.files?.length ? await uploadImgsToCloudinary(req.files) : [];
@@ -112,11 +112,15 @@ app.put('/edit-product/:id', upload.array('images', 5), async (req, res) => {
             imageUrls = [...imageUrls, ...uploadedImages];
         }
 
+        // Ensure `color` is an array, remove empty values
+        const colors = Array.isArray(color)
+            ? color.map(c => c.trim()).filter(c => c !== "")
+            : color ? color.split(',').map(c => c.trim()).filter(c => c !== "") : [];
 
 
         const updatedProduct = await productModel.findByIdAndUpdate(
             req.params.id,
-            { name, description, price, stock, color, images: imageUrls, size, category, tag, SKU },
+            { name, description, price, stock, color: colors, images: imageUrls, size, category, tag, SKU },
             { new: true, runValidators: true }
         );
 
