@@ -61,7 +61,7 @@ const ProductCard = ({ product, loading }) => {
             </div>
         </Link>
     );
-};
+};  
 
 const ProductGrid = () => {
     const [products, setProducts] = useState([]);

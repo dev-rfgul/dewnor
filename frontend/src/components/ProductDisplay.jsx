@@ -28,8 +28,9 @@ const ProductDisplay = () => {
 
         fetchProduct();
     }, [id]); // Ensure it re-fetches when `id` changes
-console.log(product)
+    console.log(product)
 
+    // loading product till the time the porducts are being loaded from the DB
     if (!product) return (
         <div className="max-w-5xl mx-auto bg-gray-100 p-6 md:p-8 rounded-lg">
             {/* Product Layout */}
@@ -117,7 +118,7 @@ console.log(product)
                         onMouseEnter={() => setIsZoomed(true)}
                         onMouseLeave={() => setIsZoomed(false)}
                         onMouseMove={handleMouseMove}
-                    >   
+                    >
                         <img
                             src={mainImage}
                             alt={product.name}
@@ -191,7 +192,17 @@ console.log(product)
                         <p><b>Category:</b> {product.category}</p>
                         <p><b>SKU:</b> {product.SKU}</p>
                         <p><b>Tag:</b> {product.tag}</p>
-                        <p><b>color:</b> {product.color}</p>
+                        <div className="flex items-center space-x-2">
+                            <span className="font-bold">Color:</span>
+                            {product.color.split(",").map((clr, index) => (
+                                <div
+                                    key={index}
+                                    className="w-6 h-6 rounded-full border border-gray-300"
+                                    style={{ backgroundColor: clr.trim() }}
+                                ></div>
+                            ))}
+                        </div>
+
                         <p><b>size:</b> {product.size}</p>
                     </div>
                 </div>

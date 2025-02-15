@@ -9,7 +9,7 @@ const EditProduct = () => {
     const [loading, setLoading] = useState(false);
 
     const [editableFields, setEditableFields] = useState({
-        name: '', price: '', color:'',description: '', stock: '', category: '', SKU: '', tag: '',
+        name: '', price: '', color: '', description: '', stock: '', size: '', category: '', SKU: '', tag: '',
     });
     const [images, setImages] = useState([]);
 
@@ -23,12 +23,13 @@ const EditProduct = () => {
                     setEditableFields({
                         name: data.product.name,
                         price: data.product.price,
-                        color:data.product.color,
+                        color: data.product.color,
                         description: data.product.description,
                         stock: data.product.stock,
                         category: data.product.category,
                         SKU: data.product.SKU,
                         tag: data.product.tag,
+                        size: data.product.size,
                     });
                     setImages(data.product.images || []);
                 }
@@ -65,7 +66,7 @@ const EditProduct = () => {
         const formData = new FormData();
         // Add editable fields
         Object.entries(editableFields).forEach(([key, value]) => formData.append(key, value));
-        
+
         // Combine the old images with new images
         images.forEach(image => formData.append('images', image)); // Add old images first
         selectedFiles.forEach(file => formData.append('images', file)); // Add new images
@@ -99,15 +100,21 @@ const EditProduct = () => {
             <h2 className="text-lg font-bold mb-4">Edit Product</h2>
 
             {Object.entries(editableFields).map(([key, value]) => (
-                <input
-                    key={key}
-                    type="text"
-                    name={key}
-                    value={value}
-                    onChange={(e) => handleEdit(key, e.target.value)}
-                    className="w-full p-2 border rounded mb-3"
-                    placeholder={`Edit ${key}`}
-                />
+                <div className="mb-4">
+                    <label className="block text-gray-700 font-medium mb-1">
+                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                    </label>
+                    <input
+                        key={key}
+                        type="text"
+                        name={key}
+                        value={value}
+                        onChange={(e) => handleEdit(key, e.target.value)}
+                        className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        placeholder={`Edit ${key}`}
+                    />
+                </div>
+
             ))}
 
             <div className="flex flex-wrap gap-4">

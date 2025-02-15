@@ -31,8 +31,7 @@ app.get('/test', (req, res) => {
     res.send("the route is working ")
 })
 
-
-
+// product routes
 
 
 app.post('/add-product', upload.array('image'), async (req, res) => {
@@ -69,7 +68,6 @@ app.post('/add-product', upload.array('image'), async (req, res) => {
         res.status(500).json({ message: 'Error creating product', error: error.message });
     }
 });
-
 app.delete('/delete-product/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -84,10 +82,6 @@ app.delete('/delete-product/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-
-
-
-//user routes
 app.get('/get-product/:id', async (req, res) => {
     try {
         const id = req.params.id;
@@ -101,12 +95,10 @@ app.get('/get-product/:id', async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.put('/edit-product/:id', upload.array('images',5), async (req, res) => {
+app.put('/edit-product/:id', upload.array('images', 5), async (req, res) => {
     try {
         const { name, description, price, stock, color, size, SKU, category, tag } = req.body;
 
-        console.log('Request body:', req.body);
-        console.log('Request files:', req.files);
 
         let imageUrls = req.body.images || [];
         if (req.files && req.files.length > 0) {
@@ -133,6 +125,8 @@ app.put('/edit-product/:id', upload.array('images',5), async (req, res) => {
     }
 });
 
+
+//user routes
 app.post('/add-user', async (req, res) => {
     const { name, email, password, role } = req.body;
     const user = new userModel({
