@@ -61,7 +61,7 @@ const ProductCard = ({ product, loading }) => {
             </div>
         </Link>
     );
-};  
+};
 
 const ProductGrid = () => {
     const [products, setProducts] = useState([]);
@@ -85,10 +85,9 @@ const ProductGrid = () => {
 
     return (
         <div className="container mx-auto px-6 py-10">
-            <h2 className="text-2xl font-bold text-gray-900 text-center mb-6">Our Products</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {loading
-                    ? Array.from({ length: 10}).map((_, index) => (
+                    ? Array.from({ length: 10 }).map((_, index) => (
                         <ProductCard key={index} loading />
                     ))
                     : products.map((product) => (

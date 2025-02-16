@@ -70,7 +70,11 @@ const ImageUploader = () => {
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_BACKEND_URL}/admin/add-product`,
-                formData, { headers: { 'Content-Type': 'multipart/form-data' } }
+                formData, {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                withCredentials: "include"
+
+            }
             );
             if (response.data.message === 'Product created successfully') {
                 alert('Product added successfully!');
@@ -92,11 +96,13 @@ const ImageUploader = () => {
 
         try {
             const response = await axios.delete(
-                `${import.meta.env.VITE_BACKEND_URL}/admin/delete-product/${id}`
+                `${import.meta.env.VITE_BACKEND_URL}/admin/delete-product/${id}`,
+                { withCredentials: true } // ✅ Correct
             );
+
             console.log(response)
 
-            if (response.status === 200) { 
+            if (response.status === 200) {
                 alert("Product deleted successfully");
             } else {
                 alert("Failed to delete product");

@@ -17,7 +17,7 @@ const EditProduct = () => {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/get-product/${id}`);
+                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-product/${id}`);
                 const data = await response.json();
                 if (data.product) {
                     setProduct(data.product);
@@ -91,6 +91,7 @@ const EditProduct = () => {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/edit-product/${id}`, {
                 method: 'PUT',
                 body: formData,
+                credentials:"include"
             });
 
             if (response.ok) {
@@ -100,7 +101,7 @@ const EditProduct = () => {
                 setImages(updatedProduct.product.images);
                 setSelectedFiles([]);
             } else {
-                console.error('Failed to update product');
+                alert('Failed to update product');
             }
         } catch (error) {
             console.error('Error updating product:', error);

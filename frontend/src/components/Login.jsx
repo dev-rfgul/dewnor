@@ -13,10 +13,10 @@ const Login = () => {
         console.log("Button clicked");
 
         // Send a POST request to your backend with the provided email and password
-        axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/login`, { email, password })
+        axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/login`, { email, password }, { withCredentials: true })
             .then((result) => {
                 console.log(result);
-                const userData = result.data.user;
+                const userData = result.data;
                 localStorage.setItem("user", JSON.stringify(userData))
                 console.log(userData)
                 // Check the email to determine the redirection path
@@ -31,6 +31,28 @@ const Login = () => {
                 // Log the error for debugging purposes
                 console.error("Error during login:", error);
             });
+    };
+
+    const handleLogin = async (email, password) => {
+        try {
+            const response = await fetch('http://localhost:5000/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                localStorage.setItem('user', JSON.stringify(data.user));
+                localStorage.setItem('token', data.token);
+                window.location.href = '/profile'; // Redirect after login
+            } else {
+                alert(data.message);
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+        }
     };
 
     return (

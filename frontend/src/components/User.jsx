@@ -36,6 +36,7 @@ const User = () => {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify(user),
+                credentials: "include"
             });
 
             const data = await response.json();
@@ -112,7 +113,7 @@ const User = () => {
                     </div>
                     <div className="mb-6">
                         <label className="block text-lg font-medium text-gray-700">Cart</label>
-                        <input type="text" name="cart" value={user.cart} onChange={handleChange} className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"  />
+                        <input type="text" name="cart" value={user.cart} onChange={handleChange} className="mt-2 block w-full p-3 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500" />
                     </div>
                     <div className="mb-6">
                         <label className="block text-lg font-medium text-gray-700">Role</label>

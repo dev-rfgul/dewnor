@@ -1,4 +1,5 @@
 import React from 'react';
+import { FaShoppingCart, FaCheckCircle, FaHistory } from 'react-icons/fa';
 
 const user = {
     name: 'Muhammad Fahad',
@@ -7,6 +8,10 @@ const user = {
     cart: [
         { id: '67aa528a90a29191be61ad5c', name: 'Product 1', price: '$199' },
         { id: '84f8b927e28b298f283a1a67d', name: 'Product 2', price: '$299' },
+    ],
+    recentlyPurchased: [
+        { id: '123', name: 'Product A', price: '$99' },
+        { id: '124', name: 'Product B', price: '$149' },
     ],
     createdAt: '2025-02-06T18:06:21.946Z',
 };
@@ -29,8 +34,11 @@ const UserProfile = () => {
             {/* User Details Section */}
             <div className="mt-12 space-y-8">
                 {/* Cart Section */}
-                <div>
-                    <h3 className="text-2xl font-semibold text-gray-800">Your Cart</h3>
+                <div className="p-6 bg-gray-50 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 className="text-2xl font-semibold text-gray-800 flex items-center">
+                        <FaShoppingCart className="mr-2 text-blue-600" />
+                        Your Cart
+                    </h3>
                     <div className="mt-4 space-y-6">
                         {user.cart.length > 0 ? (
                             user.cart.map((item, index) => (
@@ -50,6 +58,44 @@ const UserProfile = () => {
                         ) : (
                             <p className="text-gray-500">No items in cart.</p>
                         )}
+                    </div>
+                </div>
+
+                {/* Recently Purchased Section */}
+                <div className="p-6 bg-gray-50 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 className="text-2xl font-semibold text-gray-800 flex items-center">
+                        <FaCheckCircle className="mr-2 text-green-500" />
+                        Recently Purchased
+                    </h3>
+                    <div className="mt-4 space-y-6">
+                        {user.recentlyPurchased.length > 0 ? (
+                            user.recentlyPurchased.map((item, index) => (
+                                <div key={index} className="flex items-center justify-between p-4 bg-gray-100 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300">
+                                    <div className="flex items-center space-x-4">
+                                        <div className="w-16 h-16 bg-gray-300 rounded-lg flex items-center justify-center text-xl font-semibold text-gray-600">
+                                            {item.name[0]}
+                                        </div>
+                                        <div>
+                                            <p className="text-lg font-semibold text-gray-800">{item.name}</p>
+                                            <p className="text-sm text-gray-500">{item.price}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-gray-500">No recent purchases.</p>
+                        )}
+                    </div>
+                </div>
+
+                {/* Order History Section */}
+                <div className="p-6 bg-gray-50 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                    <h3 className="text-2xl font-semibold text-gray-800 flex items-center">
+                        <FaHistory className="mr-2 text-yellow-600" />
+                        Order History
+                    </h3>
+                    <div className="mt-4">
+                        <p className="text-gray-500">View your past orders and more.</p>
                     </div>
                 </div>
 

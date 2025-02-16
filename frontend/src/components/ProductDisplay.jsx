@@ -56,25 +56,38 @@ const ProductDisplay = () => {
 
     if (!product) return (
         <div className="max-w-5xl mx-auto bg-gray-100 p-6 md:p-8 rounded-lg">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                <div className="flex flex-col items-center">
-                    <div className="relative w-full max-w-[400px] sm:max-w-[500px] overflow-hidden bg-gray-300 animate-pulse rounded-lg"></div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                {/* Product Image Skeleton */}
+                <div className="flex flex-col items-center space-y-4">
+                    <div className="relative w-full max-w-[250px] sm:max-w-[300px] h-64 bg-gray-300 animate-pulse rounded-lg"></div>
+
+                    {/* Image Thumbnails */}
                     <div className="flex flex-wrap justify-center gap-3 mt-4">
-                        {Array(5).fill("").map((_, index) => (
-                            <div key={index} className="w-16 h-16 sm:w-20 sm:h-20 bg-gray-300 animate-pulse rounded-lg" />
+                        {Array(4).fill("").map((_, index) => (
+                            <div
+                                key={index}
+                                className="w-12 h-12 sm:w-16 sm:h-16 bg-gray-300 animate-pulse rounded-lg"
+                            />
                         ))}
                     </div>
                 </div>
-                <div>
-                    <div className="bg-gray-300 animate-pulse w-32 h-6 mb-4 rounded-lg" />
-                    <div className="bg-gray-300 animate-pulse w-20 h-6 mb-4 rounded-lg" />
-                    <div className="bg-gray-300 animate-pulse w-40 h-6 mb-4 rounded-lg" />
-                    <div className="bg-gray-300 animate-pulse w-20 h-6 mb-4 rounded-lg" />
-                    <div className="bg-gray-300 animate-pulse w-full h-16 mb-4 rounded-lg" />
-                    <div className="bg-gray-300 animate-pulse w-24 h-6 mb-4 rounded-lg" />
+
+                {/* Product Info Skeleton */}
+                <div className="space-y-6">
+                    <div className="bg-gray-300 animate-pulse w-32 h-6 mb-4 rounded-lg"></div>
+                    <div className="bg-gray-300 animate-pulse w-40 h-6 mb-4 rounded-lg"></div>
+                    <div className="bg-gray-300 animate-pulse w-24 h-6 mb-4 rounded-lg"></div>
+                    <div className="bg-gray-300 animate-pulse w-full h-8 mb-6 rounded-lg"></div>
+
+                    {/* Price Skeleton */}
+                    <div className="bg-gray-300 animate-pulse w-24 h-8 rounded-lg"></div>
+
+                    {/* Add to Cart Button Skeleton */}
+                    <div className="bg-gray-300 animate-pulse w-36 h-10 mt-4 rounded-lg"></div>
                 </div>
             </div>
         </div>
+
     );
 
     return (
@@ -118,7 +131,6 @@ const ProductDisplay = () => {
                     <p className={`text-lg font-medium ${product.stock > 0 ? "text-gray-600" : "text-red-500"}`}>
                         {product.stock > 0 ? `In Stock: ${product.stock}` : "Out of Stock"}
                     </p>
-
                     {/* Colors */}
                     <div className="flex items-center gap-2">
                         <span className="text-gray-600">Available Colors:</span>

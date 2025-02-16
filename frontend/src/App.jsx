@@ -12,9 +12,13 @@ import EditProduct from './components/EditProduct'
 
 const App = () => {
   const user = JSON.parse(localStorage.getItem("user"))
+  // console.log(user.user.role)
 
+
+  const role = user.user.role
+  console.log(role)
   // Check if the user is logged in and has a role
-  const isUserLoggedIn = user && user.role;
+  const isUserLoggedIn = user && role;
 
   return (
     <>
@@ -29,7 +33,7 @@ const App = () => {
           {/* Protected routes for users who are logged in */}
           {isUserLoggedIn ? (
             <>
-              {user.role === 'admin' && (
+              {role === 'admin' && (
                 <>
                   <Route path='/admin' element={<Admin />} />
                   <Route path='/add-product' element={<AddProduct />} />
