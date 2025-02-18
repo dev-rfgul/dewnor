@@ -16,9 +16,9 @@ const Navbar = () => {
 
             <div className="container mx-auto px-4 py-4 flex items-center justify-between">
                 {/* Logo Section */}
-                <Link 
-                to='/'
-                className="flex items-center space-x-4">
+                <Link
+                    to='/'
+                    className="flex items-center space-x-4">
                     <img
                         className="w-36 md:w-48 h-auto object-contain"
                         src="https://www.dewnor.com/wp-content/uploads/2021/01/cropped-cropped-logo.png"
@@ -40,7 +40,10 @@ const Navbar = () => {
                     <div className="flex items-center space-x-2">
                         <FontAwesomeIcon icon={faUser} className="text-black text-lg" />
                         <div>
-                            <p className="text-gray-500 text-sm">My Account</p>
+                            <Link
+                                to={'/login'}
+                                className="text-gray-500 text-sm"
+                            >My Account</Link>
                             <nav>
                                 <Link
                                     to="/signup"

@@ -11,14 +11,12 @@ import Profile from './components/Profile'
 import EditProduct from './components/EditProduct'
 
 const App = () => {
-  const user = JSON.parse(localStorage.getItem("user"))
-  // console.log(user.user.role)
+  const user = JSON.parse(localStorage.getItem("user")) || null;
 
-
-  const role = user.user.role
-  console.log(role)
-  // Check if the user is logged in and has a role
-  const isUserLoggedIn = user && role;
+  // Ensure user is valid before accessing role
+  const role = user?.user?.role || null;
+  const isUserLoggedIn = !!user && !!role;
+  // alert(isUserLoggedIn)
 
   return (
     <>
@@ -30,23 +28,18 @@ const App = () => {
           <Route path='/product/:id' element={<ProductDisplay />} />
           <Route path='/profile' element={<Profile />} />
 
-          {/* Protected routes for users who are logged in */}
-          {isUserLoggedIn ? (
+          {/* Admin Routes */}
+          {isUserLoggedIn && role === 'admin' ? (
             <>
-              {role === 'admin' && (
-                <>
-                  <Route path='/admin' element={<Admin />} />
-                  <Route path='/add-product' element={<AddProduct />} />
-                  <Route path='/add-users' element={<User />} />
-                  <Route path='/edit-product/:id' element={<EditProduct />} />
-                </>
-              )}
-
+              <Route path='/admin' element={<Admin />} />
+              <Route path='/add-product' element={<AddProduct />} />
+              <Route path='/add-users' element={<User />} />
+              <Route path='/edit-product/:id' element={<EditProduct />} />
             </>
-          ) : (
-            // Redirect to login if not logged in
-            <Route path="*" element={<Navigate to="/login" />} />
-          )}
+          ) : null}
+
+          {/* Redirect unknown routes to home */}
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </div>
     </>

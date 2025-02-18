@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaShoppingCart, FaCheckCircle, FaHistory } from 'react-icons/fa';
+import {useNavigate} from 'react-router-dom'
+import axios from 'axios'
+
 
 const user = {
-    name: 'Muhammad Fahad',
-    role: 'Admin',
-    email: 'raofahadgul785@gmail.com',
+    name: 'UserName',
+    role: 'User',
+    email: 'user@dewnor.com',
     cart: [
         { id: '67aa528a90a29191be61ad5c', name: 'Product 1', price: '$199' },
         { id: '84f8b927e28b298f283a1a67d', name: 'Product 2', price: '$299' },
@@ -16,7 +19,44 @@ const user = {
     createdAt: '2025-02-06T18:06:21.946Z',
 };
 
+
 const UserProfile = () => {
+    const [userData, setUserData] = useState('')
+
+
+    useEffect(() => {
+        const getUser = async () => {
+            const user = localStorage.getItem("user"); // Retrieve the user data
+            if (user) {
+                const parsedData = JSON.parse(user); // Parse JSON string
+                const id = parsedData.user.id; // Correctly access the user ID
+                setUserData(parsedData.user)
+                try {
+                    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/get-user/${id}`);
+                    const data = await response.json();
+                    // setUsers(data);
+                    console.log(data)
+                } catch (error) {
+                    console.error("Error fetching users:", error);
+                }
+            } else {
+                console.error("No user found in localStorage");
+            }
+        };
+
+        getUser();
+
+    }, []);
+    const handleLogout = async () => {
+        try {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/logout`, {}, { withCredentials: true });
+            alert("User logged out successfully");
+            localStorage.clear()
+            navigate("/login"); // Redirect to login page after logout
+        } catch (error) {
+            console.error("Logout failed:", error.response?.data?.message || error.message);
+        }
+    };
     return (
         <div className="max-w-4xl mx-auto bg-white p-8 rounded-3xl shadow-xl hover:shadow-2xl transition-shadow duration-300 ease-in-out">
             {/* User Info Section */}
@@ -25,10 +65,11 @@ const UserProfile = () => {
                     {user.name[0]}
                 </div>
                 <div>
-                    <h2 className="text-4xl font-semibold text-gray-800">{user.name}</h2>
-                    <p className="text-lg text-gray-500">{user.role}</p>
-                    <p className="text-sm text-gray-400 mt-1">{user.email}</p>
+                    <h2 className="text-4xl font-semibold text-gray-800">{userData.name}</h2>
+                    <p className="text-lg text-gray-500">{userData.role}</p>
+                    <p className="text-sm text-gray-400 mt-1">{userData.email}</p>
                 </div>
+                <button onClick={handleLogout}>Logout</button>
             </div>
 
             {/* User Details Section */}

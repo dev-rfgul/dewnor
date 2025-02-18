@@ -40,9 +40,6 @@ app.use(cookieParser())
 app.get('/test', cors(corsOption), (req, res) => {
     console.log("the test route from index.js")
     res.send("the test route from index.js")
-    console.log("Cloudinary API Key:", process.env.CLOUDINARY_API_KEY);
-    console.log("Cloudinary API Secret:", process.env.CLOUDINARY_API_SECRET);
-    console.log("Cloudinary Cloud Name:", process.env.CLOUDINARY_CLOUD_NAME);
 })
 
 app.get('/', (req, res) => {
