@@ -1,7 +1,34 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const ProductCard = ({ product, loading }) => {
+    const [userId, setUserId] = useState()
+
+    useEffect(() => {
+        const storedUser = localStorage.getItem("user");
+        if (storedUser) {
+            console.log(storedUser)
+            const parsedUser = JSON.parse(storedUser);
+            setUserId(parsedUser.user.id);
+        } else {
+            console.error("No user found in localStorage");
+        }
+
+    }, [])
+    const addToCart = async (productId, userId) => {
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/product/add-to-cart`, {
+                productId,
+                userId
+            });
+
+            alert(response.data.message);
+        } catch (error) {
+            console.error("Error:", error.response?.data?.message || error.message);
+            alert("Error adding product to cart: " + (error.response?.data?.message || error.message));
+        }
+    };
     if (loading) {
         return (
             <div className="border rounded-xl shadow-lg overflow-hidden bg-white">
@@ -30,8 +57,9 @@ const ProductCard = ({ product, loading }) => {
     }
 
     return (
-        <Link to={`/product/${product._id}`} className="block">
-            <div className="border rounded-xl shadow-lg overflow-hidden bg-white hover:shadow-2xl hover:scale-105 transition-transform duration-300">
+
+        <div className="border rounded-xl shadow-lg overflow-hidden bg-white hover:shadow-2xl hover:scale-105 transition-transform duration-300">
+            <Link to={`/product/${product._id}`} className="block">
                 <div className="relative">
                     <img
                         src={product.images[0]}
@@ -54,12 +82,17 @@ const ProductCard = ({ product, loading }) => {
                         <span className="font-medium">{product.tag}</span>
                         <span className="font-medium">| SKU: {product.SKU}</span>
                     </div>
-                    <button className="mt-4 w-full bg-gray-800 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-all">
-                        ADD TO CART
-                    </button>
                 </div>
-            </div>
-        </Link>
+            </Link>
+            <button
+                onClick={() => { addToCart(product._id, userId) }}
+                className="mt-4 w-full bg-gray-800 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-all"
+            >
+                ADD TO CART
+            </button>
+        </div>
+
+
     );
 };
 
