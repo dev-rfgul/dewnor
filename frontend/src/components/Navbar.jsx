@@ -41,7 +41,7 @@ const Navbar = () => {
                         <FontAwesomeIcon icon={faUser} className="text-black text-lg" />
                         <div>
                             <Link
-                                to={'/login'}
+                                to={'/profile'}
                                 className="text-gray-500 text-sm"
                             >My Account</Link>
                             <nav>

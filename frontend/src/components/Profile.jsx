@@ -332,10 +332,7 @@ const UserProfile = () => {
                     <div className="mt-6 space-y-6">
                         {cartProducts.length > 0 ? (
                             cartProducts.map((product) => (
-                                <div
-                                    key={product._id}
-                                    className="border rounded-xl shadow-md overflow-hidden bg-white hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300"
-                                >
+                                <div className="border rounded-xl shadow-md overflow-hidden bg-white hover:shadow-2xl hover:scale-[1.02] transition-transform duration-300">
                                     <div className="relative">
                                         <img
                                             src={product.images[0]}
@@ -349,16 +346,12 @@ const UserProfile = () => {
                                         )}
                                     </div>
                                     <div className="p-4">
-                                        <h3 className="text-base font-semibold text-gray-900">
-                                            {product.name}
-                                        </h3>
+                                        <h3 className="text-base font-semibold text-gray-900">{product.name}</h3>
                                         <div className="flex items-center gap-2 mt-2">
                                             <span className="text-gray-400 line-through text-sm">
                                                 {product.originalPrice} د.إ
                                             </span>
-                                            <span className="text-green-600 font-bold text-lg">
-                                                {product.price} د.إ
-                                            </span>
+                                            <span className="text-green-600 font-bold text-lg">{product.price} د.إ</span>
                                         </div>
                                         <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
                                             <span className="font-medium">{product.tag}</span>
