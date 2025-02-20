@@ -77,7 +77,6 @@ app.post('/add-to-cart', async (req, res) => {
     }
 
 })
-
 app.post('/remove-from-cart', async (req, res) => {
     try {
         const { productId, userId } = req.body;

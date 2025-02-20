@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 const Navbar = () => {
     const [menuOpen, setMenuOpen] = useState(false);
+    const [cart, setCart] = useState(1)
 
     return (
         <header className="bg-white shadow-md">
@@ -70,12 +71,17 @@ const Navbar = () => {
                     </div>
 
                     {/* Cart Icon */}
-                    <div className="relative">
-                        <FontAwesomeIcon icon={faShoppingCart} className="text-black text-lg" />
-                        <span className="absolute -top-2 -right-2 bg-lime-500 text-black text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                            0
-                        </span>
-                    </div>
+                    <Link
+                        to={"/profile"}
+                    >
+                        <div className="relative">
+                            <FontAwesomeIcon icon={faShoppingCart} className="text-black text-lg" />
+                            <span className="absolute -top-2 -right-2 bg-lime-500 text-black text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                {cart}
+                            </span>
+                        </div>
+                    </Link>
+
                 </div>
             </div>
 
