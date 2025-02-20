@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+
 
 const ProductCard = ({ product, loading }) => {
+    const dispatch = useDispatch()
+
     const [userId, setUserId] = useState()
 
     useEffect(() => {
@@ -23,12 +27,22 @@ const ProductCard = ({ product, loading }) => {
                 userId
             });
 
-            alert(response.data.message);
+            if (response.data && response.data.message) {
+                alert(response.data.message);
+            }
+
+            // ✅ Dispatch to Redux store only after a successful API call
+            dispatch(addToCart(productId));
+
         } catch (error) {
             console.error("Error:", error.response?.data?.message || error.message);
             alert("Error adding product to cart: " + (error.response?.data?.message || error.message));
         }
     };
+    const handleAddToCart = (product,userID) => {
+        dispatch(addToCart(product, userId));
+    };
+
     if (loading) {
         return (
             <div className="border rounded-xl shadow-lg overflow-hidden bg-white">
@@ -85,7 +99,7 @@ const ProductCard = ({ product, loading }) => {
                 </div>
             </Link>
             <button
-                onClick={() => { addToCart(product._id, userId) }}
+                onClick={handleAddToCart}
                 className="mt-4 w-full bg-gray-800 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-all"
             >
                 ADD TO CART

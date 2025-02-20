@@ -3,11 +3,18 @@ import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser, faHeart, faShoppingCart, faBars, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+
 
 const Navbar = () => {
+
     const [menuOpen, setMenuOpen] = useState(false);
     const [cart, setCart] = useState(1)
 
+
+    const cartLength = useSelector((state) => state.cart.items.length)
+    console.log(cartLength)
     return (
         <header className="bg-white shadow-md">
             {/* Banner Section */}
@@ -76,9 +83,12 @@ const Navbar = () => {
                     >
                         <div className="relative">
                             <FontAwesomeIcon icon={faShoppingCart} className="text-black text-lg" />
-                            <span className="absolute -top-2 -right-2 bg-lime-500 text-black text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                                {cart}
-                            </span>
+
+                            {cartLength > 0 && (
+                                <span className="absolute -top-2 -right-2 bg-lime-500 text-black text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                    {cartLength}
+                                </span>
+                            )}
                         </div>
                     </Link>
 
