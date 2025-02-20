@@ -21,28 +21,19 @@ const ProductCard = ({ product, loading }) => {
 
     }, [])
     const addToCart = async (productId, userId) => {
+
         try {
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/product/add-to-cart`, {
                 productId,
                 userId
             });
 
-            if (response.data && response.data.message) {
-                alert(response.data.message);
-            }
-
-            // ✅ Dispatch to Redux store only after a successful API call
-            dispatch(addToCart(productId));
-
+            alert(response.data.message);
         } catch (error) {
             console.error("Error:", error.response?.data?.message || error.message);
             alert("Error adding product to cart: " + (error.response?.data?.message || error.message));
         }
     };
-    const handleAddToCart = (product,userID) => {
-        dispatch(addToCart(product, userId));
-    };
-
     if (loading) {
         return (
             <div className="border rounded-xl shadow-lg overflow-hidden bg-white">
@@ -99,7 +90,7 @@ const ProductCard = ({ product, loading }) => {
                 </div>
             </Link>
             <button
-                onClick={handleAddToCart}
+                onClick={() => { addToCart(product._id, userId) }}
                 className="mt-4 w-full bg-gray-800 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-all"
             >
                 ADD TO CART

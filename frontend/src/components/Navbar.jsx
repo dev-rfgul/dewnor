@@ -83,12 +83,9 @@ const Navbar = () => {
                     >
                         <div className="relative">
                             <FontAwesomeIcon icon={faShoppingCart} className="text-black text-lg" />
-
-                            {cartLength > 0 && (
-                                <span className="absolute -top-2 -right-2 bg-lime-500 text-black text-xs rounded-full h-4 w-4 flex items-center justify-center">
-                                    {cartLength}
-                                </span>
-                            )}
+                            <span className="absolute -top-2 -right-2 bg-lime-500 text-black text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                                {cartLength > 0 ? cartLength : 0}
+                            </span>
                         </div>
                     </Link>
 
