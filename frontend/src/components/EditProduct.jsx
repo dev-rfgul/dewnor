@@ -91,7 +91,7 @@ const EditProduct = () => {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/edit-product/${id}`, {
                 method: 'PUT',
                 body: formData,
-                credentials:"includem"
+                credentials:"include"
             });
 
             if (response.ok) {

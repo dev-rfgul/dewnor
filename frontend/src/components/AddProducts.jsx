@@ -8,13 +8,13 @@ const ImageUploader = () => {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [selectedColors, setSelectedColors] = useState([])
     const [loading, setLoading] = useState(false);
-    const [product, setProduct] = useState({
+    const [product, setProduct] = useState({ // being used to upload a new product
         name: '', description: '', price: '', stock: '',
         color: '', size: '', SKU: '', category: '', tag: '',
     });
-    const [products, setProducts] = useState([]);
+    const [products, setProducts] = useState([]);       // being used to display the fetched products from DB
 
-    useEffect(() => { fetchProducts(); }, []);
+    useEffect(() => { fetchProducts(); }, [products]);
 
     const fetchProducts = async () => {
         try {
@@ -76,6 +76,7 @@ const ImageUploader = () => {
 
             }
             );
+            // setProducts((prevProducts) => [...prevProducts, response.data]);
             if (response.data.message === 'Product created successfully') {
                 alert('Product added successfully!');
                 setProduct({ name: '', description: '', price: '', stock: '', color: '', size: '', SKU: '', category: '', tag: '' });
