@@ -154,6 +154,12 @@ const UserProfile = () => {
                                         >
                                             Remove From Cart
                                         </button>
+                                        <button
+                                            onClick={() => alert("Payment gateway not implemented yet.")}
+                                            className="mt-4 w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all"
+                                        >
+                                            Pay Now
+                                        </button>
                                     </div>
                                 </div>
                             ))
