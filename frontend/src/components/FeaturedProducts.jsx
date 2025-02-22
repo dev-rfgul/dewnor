@@ -63,39 +63,48 @@ const ProductCard = ({ product, loading }) => {
 
     return (
 
-        <div className="border rounded-xl shadow-lg overflow-hidden bg-white hover:shadow-2xl hover:scale-105 transition-transform duration-300">
-            <Link to={`/product/${product._id}`} className="block">
-                <div className="relative">
-                    <img
-                        src={product.images[0]}
-                        alt={product.title}
-                        className="w-full h-48 object-cover"
-                    />
-                    {product.discount > 0 && (
-                        <div className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 text-xs font-semibold rounded-full shadow-md">
-                            -{product.discount}%
-                        </div>
-                    )}
-                </div>
-                <div className="p-4">
-                    <h3 className="text-base font-semibold text-gray-900">{product.name}</h3>
-                    <div className="flex items-center gap-2 mt-2">
-                        <span className="text-gray-400 line-through text-sm">{product.originalPrice} د.إ</span>
-                        <span className="text-green-600 font-bold text-lg">{product.price} د.إ</span>
+        <div className="border rounded-xl shadow-lg overflow-hidden bg-white hover:shadow-2xl hover:scale-[1.03] transition-transform duration-300">
+        <Link to={`/product/${product._id}`} className="block">
+            <div className="relative">
+                <img
+                    src={product.images[0]}
+                    alt={product.title}
+                    className="w-full h-52 object-cover"
+                />
+                {product.discount > 0 && (
+                    <div className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 text-xs font-semibold rounded-full shadow-md">
+                        -{product.discount}%
                     </div>
-                    <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
-                        <span className="font-medium">{product.tag}</span>
-                        <span className="font-medium">| SKU: {product.SKU}</span>
-                    </div>
+                )}
+            </div>
+            <div className="p-4">
+                <h3 className="text-base font-semibold text-gray-900">{product.name}</h3>
+                <div className="flex items-center gap-2 mt-2">
+                    <span className="text-gray-400 line-through text-sm">{product.originalPrice} د.إ</span>
+                    <span className="text-green-600 font-bold text-lg">{product.price} د.إ</span>
                 </div>
-            </Link>
+                <div className="flex items-center gap-2 mt-2 text-gray-600 text-sm">
+                    <span className="font-medium">{product.tag}</span>
+                    <span className="font-medium">| SKU: {product.SKU}</span>
+                </div>
+            </div>
+        </Link>
+        <div className="p-4 flex flex-col gap-2">
             <button
-                onClick={() => { addToCart(product._id, userId) }}
-                className="mt-4 w-full bg-gray-800 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-all"
+                onClick={() => addToCart(product._id, userId)}
+                className="w-full bg-gray-800 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-gray-700 transition-all active:scale-95"
             >
                 ADD TO CART
             </button>
+            <button
+                onClick={() => addToCart(product._id, userId)}
+                className="w-full bg-blue-500 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-blue-600 transition-all active:scale-95"
+            >
+                Buy Now
+            </button>
         </div>
+    </div>
+    
 
 
     );
