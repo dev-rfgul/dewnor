@@ -9,6 +9,7 @@ import AddProduct from './components/AddProducts'
 import User from './components/User'
 import Profile from './components/Profile'
 import EditProduct from './components/EditProduct'
+import AllProducts from './components/AllProducts'
 
 const App = () => {
   const user = JSON.parse(localStorage.getItem("user")) || null;
@@ -27,6 +28,7 @@ const App = () => {
           <Route path='/login' element={<Login />} />
           <Route path='/product/:id' element={<ProductDisplay />} />
           <Route path='/profile' element={<Profile />} />
+          <Route path='/all-products' element={<AllProducts />} />
 
           {/* Admin Routes */}
           {isUserLoggedIn && role === 'admin' ? (
@@ -35,7 +37,7 @@ const App = () => {
               <Route path='/add-product' element={<AddProduct />} />
               <Route path='/add-users' element={<User />} />
               <Route path='/edit-product/:id' element={<EditProduct />} />
-              
+
             </>
           ) : null}
 
