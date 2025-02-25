@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv'
 import cors from 'cors';
+import Stripe from 'stripe';
 
 
 import { connectDB } from './config/db.js';
@@ -17,6 +18,8 @@ import cookieParser from 'cookie-parser';
 
 const app = express();
 dotenv.config();
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+console.log("the stripe key is ", process.env.STRIPE_SECRET_KEY)
 
 var corsOption = {
     origin: process.env.FRONT_END_URL,  // No empty strings, must match frontend

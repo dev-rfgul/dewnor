@@ -1,7 +1,0 @@
-
-
-1:edit product func:
-    set input types , 
-    add more imgs btn 
-
-2:login through jwt
