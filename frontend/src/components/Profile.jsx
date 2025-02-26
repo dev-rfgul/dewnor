@@ -3,13 +3,30 @@ import React, { useEffect, useState } from "react";
 import { FaShoppingCart, FaCheckCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import StripeCheckout from 'react-stripe-checkout';
 
 const UserProfile = () => {
     const [userData, setUserData] = useState(null);
     const [cartProducts, setCartProducts] = useState([]);
     const [userId, setUserId] = useState(null);
+    // const [cartTotal, setCartTotal] = useState(0);
+    const [product, setProduct] = useState()
+
 
     const navigate = useNavigate();
+
+
+    const makePayment = token => {
+        const body = {
+            token,
+            product,
+
+        }
+        const headers = {
+            "Content-Type": "application/json"
+        }
+    }
+
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
@@ -156,10 +173,22 @@ const UserProfile = () => {
                                         </button>
                                         <button
                                             onClick={() => alert("Payment gateway not implemented yet.")}
-                                            className="mt-4 w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all"
+                                            className="mt-4 w-full bg-green-200 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all"
                                         >
                                             Pay Now
                                         </button>
+
+                                        <StripeCheckout
+                                            stripeKey={import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}
+                                            token=""
+                                            name="buy now"
+                                        >
+                                            <button
+                                                className="mt-4 w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all"
+                                            >
+                                                Pay Now
+                                            </button>
+                                        </StripeCheckout>
                                     </div>
                                 </div>
                             ))
