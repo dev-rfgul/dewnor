@@ -266,85 +266,45 @@
 // };
 
 // export default UserProfile;
-
-
-import { useStripe, useElements, CardElement, Elements } from "@stripe/react-stripe-js";
-import { loadStripe } from "@stripe/stripe-js";
+import { useStripe, useElements, CardElement } from "@stripe/react-stripe-js";
 import React, { useEffect, useState } from "react";
 import { FaShoppingCart, FaCheckCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
+import StripeCheckout from "react-stripe-checkout";
 
 const UserProfile = () => {
     const [userData, setUserData] = useState(null);
     const [cartProducts, setCartProducts] = useState([]);
     const [userId, setUserId] = useState(null);
-    const [product, setProduct] = useState(null); // Initialize as null
+    const [product, setProduct] = useState(null); // Ensure product is defined
 
     const navigate = useNavigate();
     const stripe = useStripe();
     const elements = useElements();
 
-    const makePayment = async () => {
-        console.log("makepayment execting")
-        if (!stripe || !elements || !product) return;
-
-        const cardElement = elements.getElement(CardElement);
-
-        const { paymentMethod, error } = await stripe.createPaymentMethod({
-            type: "card",
-            card: cardElement,
-        });
-
-        if (error) {
-            console.error("Error creating payment method:", error);
-            return;
-        }
-
-        const body = {
-            paymentMethodId: paymentMethod.id,
-            product,
-        };
-
-        try {
-            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/payment`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(body),
-            });
-
-            const data = await response.json();
-            console.log("Payment Response:", data);
-
-            if (!response.ok) {
-                console.error("Payment Error:", data);
-            } else {
-                alert("Payment Successful!");
-            }
-        } catch (error) {
-            console.error("Fetch Error:", error);
-        }
-    };
-
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         if (storedUser) {
             const parsedUser = JSON.parse(storedUser);
-            setUserId(parsedUser?.user?.id || null);
+            setUserId(parsedUser.user.id);
+        } else {
+            console.error("No user found in localStorage");
         }
     }, []);
 
     useEffect(() => {
         const getUser = async () => {
             if (!userId) return;
+
             try {
-                const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/get-user/${userId}`);
+                const response = await fetch(
+                    `${import.meta.env.VITE_BACKEND_URL}/user/get-user/${userId}`
+                );
                 const data = await response.json();
                 setUserData(data.user);
 
-                if (data.user?.cart?.length > 0) {
+                if (data.user.cart.length > 0) {
                     fetchCartProducts(data.user.cart);
                 }
             } catch (error) {
@@ -357,20 +317,48 @@ const UserProfile = () => {
 
     const fetchCartProducts = async (cartIds) => {
         if (!Array.isArray(cartIds) || cartIds.length === 0) return;
+
         try {
             const response = await axios.post(
                 `${import.meta.env.VITE_BACKEND_URL}/product/get-selected-products`,
                 { ids: cartIds }
             );
             setCartProducts(response.data);
+            setProduct(response.data[0]); // Set first product as default for payment
         } catch (error) {
             console.error("Error fetching products:", error);
         }
     };
 
+    const handlePayment = async () => {
+        if (!stripe || !elements) return;
+
+        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/payment2`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount: 5000, currency: "usd" }),
+        });
+
+        const { clientSecret } = await response.json();
+
+        const result = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: { card: elements.getElement(CardElement) },
+        });
+
+        if (result.error) {
+            console.error(result.error.message);
+        } else {
+            console.log("Payment successful!", result.paymentIntent);
+        }
+    };
+
     const handleLogout = async () => {
         try {
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/user/logout`, {}, { withCredentials: true });
+            await axios.post(
+                `${import.meta.env.VITE_BACKEND_URL}/user/logout`,
+                {},
+                { withCredentials: true }
+            );
             alert("User logged out successfully");
             localStorage.clear();
             navigate("/login");
@@ -392,62 +380,71 @@ const UserProfile = () => {
         }
     };
 
-    if (!userData) return <p className="text-center mt-10 text-lg">Loading user data...</p>;
+    if (!userData) {
+        return <p className="text-center mt-10 text-lg">Loading user data...</p>;
+    }
 
     return (
-        <Elements stripe={stripePromise}>
-            <div className="max-w-4xl mx-auto bg-white p-10 rounded-3xl shadow-2xl hover:shadow-3xl transition-shadow duration-300 ease-in-out">
-                <div className="flex items-center space-x-8 border-b pb-6">
-                    <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-5xl font-bold shadow-lg">
-                        {userData?.name?.charAt(0)}
+        <div className="max-w-4xl mx-auto bg-white p-10 rounded-3xl shadow-2xl hover:shadow-3xl transition-shadow duration-300 ease-in-out">
+            <div className="flex items-center space-x-8 border-b pb-6">
+                <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-5xl font-bold shadow-lg">
+                    {userData?.name?.charAt(0)}
+                </div>
+                <div>
+                    <h2 className="text-4xl font-bold text-gray-800">{userData.name}</h2>
+                    <p className="text-lg text-gray-500 capitalize">{userData.role}</p>
+                    <p className="text-sm text-gray-400 mt-1">{userData.email}</p>
+                </div>
+                <button onClick={handleLogout} className="text-red-500 font-semibold hover:text-red-600 transition">
+                    Logout
+                </button>
+            </div>
+
+            <div className="mt-8 space-y-8">
+                <div className="p-6 bg-gray-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
+                    <h3 className="text-2xl font-semibold text-gray-800 flex items-center">
+                        <FaShoppingCart className="mr-2 text-blue-600" />
+                        Your Cart
+                    </h3>
+                    <div className="mt-6 space-y-6">
+                        {cartProducts.length > 0 ? (
+                            cartProducts.map((product) => (
+                                <div key={product._id} className="border rounded-xl shadow-md bg-white">
+                                    <img src={product.images[0]} alt={product.title} className="w-full h-48 object-cover" />
+                                    <div className="p-4">
+                                        <h3 className="text-base font-semibold text-gray-900">{product.name}</h3>
+                                        <span className="text-green-600 font-bold text-lg">{product.price} د.إ</span>
+                                        <button onClick={() => removeFromCart(product._id)} className="mt-4 w-full bg-red-600 text-white text-sm px-5 py-2 rounded-lg hover:bg-red-700">
+                                            Remove From Cart
+                                        </button>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-gray-500">No items in cart.</p>
+                        )}
                     </div>
-                    <div>
-                        <h2 className="text-4xl font-bold text-gray-800">{userData.name}</h2>
-                        <p className="text-lg text-gray-500 capitalize">{userData.role}</p>
-                        <p className="text-sm text-gray-400 mt-1">{userData.email}</p>
-                    </div>
-                    <button onClick={handleLogout} className="text-red-500 font-semibold hover:text-red-600 transition">
-                        Logout
-                    </button>
                 </div>
 
-                <div className="mt-8 space-y-8">
-                    <div className="p-6 bg-gray-50 rounded-xl shadow-lg hover:shadow-xl transition-shadow">
-                        <h3 className="text-2xl font-semibold text-gray-800 flex items-center">
-                            <FaShoppingCart className="mr-2 text-blue-600" />
-                            Your Cart
-                        </h3>
-                        <div className="mt-6 space-y-6">
-                            {cartProducts.length > 0 ? (
-                                cartProducts.map((product) => (
-                                    <div key={product._id} className="border rounded-xl shadow-md bg-white hover:shadow-2xl transition">
-                                        <img src={product.images[0]} alt={product.title} className="w-full h-48 object-cover" />
-                                        <div className="p-4">
-                                            <h3 className="text-base font-semibold text-gray-900">{product.name}</h3>
-                                            <p className="text-green-600 font-bold text-lg">{product.price} د.إ</p>
-                                            <button
-                                                onClick={() => removeFromCart(product._id)}
-                                                className="mt-4 w-full bg-red-600 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-red-700 transition-all"
-                                            >
-                                                Remove From Cart
-                                            </button>
-                                            <button
-                                                onClick={makePayment}
-                                                className="mt-4 w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all"
-                                            >
-                                                Pay Now
-                                            </button>
-                                        </div>
-                                    </div>
-                                ))
-                            ) : (
-                                <p className="text-gray-500">No items in cart.</p>
-                            )}
-                        </div>
-                    </div>
+                <div className="text-center mt-6">
+                    {product && (
+                        <StripeCheckout
+                            stripeKey={import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}
+                            token={handlePayment}
+                            name="Complete Purchase"
+                            amount={product.price * 100} // Convert to cents
+                            currency="AED"
+                            shippingAddress
+                            billingAddress
+                        >
+                            <button className="w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg hover:bg-green-700">
+                                Pay Now
+                            </button>
+                        </StripeCheckout>
+                    )}
                 </div>
             </div>
-        </Elements>
+        </div>
     );
 };
 

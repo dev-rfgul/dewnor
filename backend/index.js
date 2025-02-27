@@ -53,35 +53,49 @@ app.post('/payment', (req, res) => {
     const { product, token } = req.body;
     console.log("PRODUCT", product);
     console.log("PRICE", product.price);
-    
+
     const idempotencyKey = uuid(); // Unique key to prevent duplicate charges
 
     stripe.customers.create({
         email: token.email,
         source: token.id
     })
-    .then((customer) => {
-        return stripe.charges.create({
-            amount: product.price * 100, // Convert to cents
-            currency: 'AED',
-            customer: customer.id,
-            receipt_email: token.email,
-            description: `Purchase of ${product.name}`,
-            shipping: {
-                name: token.card.name,
-                address: {
-                    country: token.card.address_country
+        .then((customer) => {
+            return stripe.charges.create({
+                amount: product.price * 100, // Convert to cents
+                currency: 'AED',
+                customer: customer.id,
+                receipt_email: token.email,
+                description: `Purchase of ${product.name}`,
+                shipping: {
+                    name: token.card.name,
+                    address: {
+                        country: token.card.address_country
+                    }
                 }
-            }
-        }, { idempotencyKey });
-    })
-    .then((result) => res.status(200).json(result))
-    .catch(error => {
-        console.error(error);
-        res.status(500).json({ error: error.message });
-    });
+            }, { idempotencyKey });
+        })
+        .then((result) => res.status(200).json(result))
+        .catch(error => {
+            console.error(error);
+            res.status(500).json({ error: error.message });
+        });
 });
+app.post("/payment2", async (req, res) => {
+    try {
+        const { amount, currency } = req.body;
 
+        const paymentIntent = await stripe.paymentIntents.create({
+            amount,
+            currency,
+            payment_method_types: ["card"],
+        });
+
+        res.json({ clientSecret: paymentIntent.client_secret });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 app.use('/user', userRoutes);
 app.use('/product', productRoutes);
