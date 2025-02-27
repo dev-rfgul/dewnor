@@ -16,11 +16,10 @@ import cookieParser from 'cookie-parser';
 
 
 
-
 const app = express();
 dotenv.config();
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-console.log("the stripe key is ", process.env.STRIPE_SECRET_KEY)
+// console.log("the stripe key is ", process.env.STRIPE_SECRET_KEY)
 
 var corsOption = {
     origin: process.env.FRONT_END_URL,  // No empty strings, must match frontend
@@ -49,32 +48,41 @@ app.get('/test', cors(corsOption), (req, res) => {
 app.get('/', (req, res) => {
     res.send(" the backend is working")
 })
+console.log(stripe)
 app.post('/payment', (req, res) => {
-    const { prduct, token } = req.body;
-    console.log("PRODUCT", prduct);
-    console.log("PRICE", prduct.price);
-    const idempotencyKey = uuid(); // will generate a unique id key it will keep the record of the user is not being charged twice
+    const { product, token } = req.body;
+    console.log("PRODUCT", product);
+    console.log("PRICE", product.price);
+    
+    const idempotencyKey = uuid(); // Unique key to prevent duplicate charges
 
-    return stripe.customers.create({
+    stripe.customers.create({
         email: token.email,
         source: token.id
-    }).then((customer) => {
-        stripe.charges.create({
-            amount:prduct.price * 100, // multiplied by 100 as it will be in cents
-            currency:'AED',
+    })
+    .then((customer) => {
+        return stripe.charges.create({
+            amount: product.price * 100, // Convert to cents
+            currency: 'AED',
             customer: customer.id,
-            receipt_email:token.email,
-            description:`purchased of ${prduct.name}`,
-            shipping:{
-                name:token.card.name,
-                address:{
-                    country:token.card.address_country
+            receipt_email: token.email,
+            description: `Purchase of ${product.name}`,
+            shipping: {
+                name: token.card.name,
+                address: {
+                    country: token.card.address_country
                 }
             }
-        }, { idempotencyKey })
-    }).then((result) => res.status(200).json(result))
-    .catch(error=> console.log(error))
-})
+        }, { idempotencyKey });
+    })
+    .then((result) => res.status(200).json(result))
+    .catch(error => {
+        console.error(error);
+        res.status(500).json({ error: error.message });
+    });
+});
+
+
 app.use('/user', userRoutes);
 app.use('/product', productRoutes);
 app.use('/admin', adminRoutes)

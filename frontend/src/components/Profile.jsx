@@ -16,16 +16,41 @@ const UserProfile = () => {
     const navigate = useNavigate();
 
 
-    const makePayment = token => {
+    const makePayment = async (token) => {
+        console.log(token)
+        if (!product) {
+            console.error("No product selected for payment.");
+            return;
+        }
+    
         const body = {
             token,
-            product,
+            product
+        };
+    
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/payment`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(body)
+            });
+    
+            const data = await response.json();
+            console.log("Payment Response:", data);
+    
+            if (!response.ok) {
+                console.error("Payment Error:", data);
+            } else {
+                alert("Payment Successful!");
+            }
+        } catch (error) {
+            console.error("Fetch Error:", error);
+        }
+    };
+    
 
-        }
-        const headers = {
-            "Content-Type": "application/json"
-        }
-    }
 
 
     useEffect(() => {
@@ -177,18 +202,18 @@ const UserProfile = () => {
                                         >
                                             Pay Now
                                         </button>
-
                                         <StripeCheckout
                                             stripeKey={import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}
-                                            token=""
-                                            name="buy now"
+                                            token={makePayment} // Pass function reference
+                                            name="Buy Now"
+                                            amount={product?.price * 100} // Convert to cents
+                                            currency="AED"
                                         >
-                                            <button
-                                                className="mt-4 w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all"
-                                            >
+                                            <button className="mt-4 w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition-all">
                                                 Pay Now
                                             </button>
                                         </StripeCheckout>
+
                                     </div>
                                 </div>
                             ))
