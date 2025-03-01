@@ -96,6 +96,31 @@ app.post("/payment2", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
+app.post("/make-payment", async (req, res) => {
+    const { products } = req.body;
+    const lineItems = products.map((product) => ({
+        price_data: {
+            currency: "AED",
+            product_data: {
+                name: product.name,
+                images: [product.image] // Changed 'image' to 'images'
+            },
+            unit_amount: product.price // Added comma before this line
+        },
+        quantity: product.quantity
+    }));
+
+
+    const session = await stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: lineItems,
+        mode: "payment",
+        success_url: '',
+        cancel_url: '',
+    })
+    res.json({ id: session.id })
+
+})
 
 app.use('/user', userRoutes);
 app.use('/product', productRoutes);

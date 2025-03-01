@@ -272,6 +272,8 @@ import { FaShoppingCart, FaCheckCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import StripeCheckout from "react-stripe-checkout";
+import { loadStripe } from "@stripe/stripe-js";
+
 
 const UserProfile = () => {
     const [userData, setUserData] = useState(null);
@@ -351,6 +353,26 @@ const UserProfile = () => {
             console.log("Payment successful!", result.paymentIntent);
         }
     };
+    const makePayment = async () => {
+        const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
+        const body={
+            products:cartProducts
+        }
+        const headers={
+            "Content-Type":"application/json"
+        }
+        const response=await fetch(`${import.meta.env.VITE_BACKEND_URL}/makePayment`,{
+            method:"POST",
+            headers:headers,
+            body:JSON.stringify(body)
+        })
+        const session=await response.json()
+        const result=stripe.redirectToCheckout({
+            sessionId:session.id
+        })
+        console.log(body)
+    }
+
 
     const handleLogout = async () => {
         try {
@@ -430,12 +452,10 @@ const UserProfile = () => {
                     {product && (
                         <StripeCheckout
                             stripeKey={import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}
-                            token={handlePayment}
+                            token={makePayment}
                             name="Complete Purchase"
                             amount={product.price * 100} // Convert to cents
                             currency="AED"
-                            shippingAddress
-                            billingAddress
                         >
                             <button className="w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg hover:bg-green-700">
                                 Pay Now
