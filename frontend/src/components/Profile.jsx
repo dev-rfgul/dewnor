@@ -452,7 +452,7 @@ const UserProfile = () => {
                     {product && (
                         <StripeCheckout
                             stripeKey={import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}
-                            token={makePayment}
+                            token={handlePayment}
                             name="Complete Purchase"
                             amount={product.price * 100} // Convert to cents
                             currency="AED"
