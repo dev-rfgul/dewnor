@@ -41,14 +41,14 @@ app.use(cookieParser())
 
 
 app.get('/test', cors(corsOption), (req, res) => {
-    console.log("the test route from index.js")
+    // console.log("the test route from index.js")
     res.send("the test route from index.js")
 })
 
 app.get('/', (req, res) => {
     res.send(" the backend is working")
 })
-console.log(stripe)
+// console.log(stripe)
 app.post('/payment', (req, res) => {
     const { product, token } = req.body;
     console.log("PRODUCT", product);
@@ -96,31 +96,67 @@ app.post("/payment2", async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 });
-app.post("/make-payment", async (req, res) => {
-    const { products } = req.body;
-    const lineItems = products.map((product) => ({
-        price_data: {
-            currency: "AED",
-            product_data: {
-                name: product.name,
-                images: [product.image] // Changed 'image' to 'images'
+// app.post("/make-payment", async (req, res) => {
+//     const { products } = req.body;
+//     const lineItems = products.map((product) => ({
+//         price_data: {
+//             currency: "AED",
+//             product_data: {
+//                 name: product.name,
+//                 images: [product.image] // Changed 'image' to 'images'
+//             },
+//             unit_amount: product.price // Added comma before this line
+//         },
+//         quantity: product.quantity
+//     }));
+
+
+//     const session = await stripe.checkout.sessions.create({
+//         payment_method_types: ["card"],
+//         line_items: lineItems,
+//         mode: "payment",
+//         success_url: '',
+//         cancel_url: '',
+//     })
+//     res.json({ id: session.id })
+
+// })
+app.post("/makePayment", async (req, res) => {
+    try {
+        const { products } = req.body;
+
+        if (!products || !Array.isArray(products) || products.length === 0) {
+            return res.status(400).json({ error: "Invalid product data" });
+        }
+
+        // Creating line items for Stripe Checkout
+        const lineItems = products.map((product) => ({
+            price_data: {
+                currency: "AED",
+                product_data: { name: product.name },
+                unit_amount: product.price * 100, // Convert to cents
             },
-            unit_amount: product.price // Added comma before this line
-        },
-        quantity: product.quantity
-    }));
+            quantity: 1, // Adjust quantity as needed
+        }));
+
+        // Create a Stripe Checkout session
+        const session = await stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            mode: "payment",
+            line_items: lineItems,
+            success_url: "http://localhost:5173/success",
+            cancel_url: "http://localhost:5173/cancel",
+        });
+
+        res.json({ sessionId: session.id });
+    } catch (error) {
+        console.error("Payment Error:", error);
+        res.status(500).json({ error: "Failed to create Stripe session" });
+    }
+});
 
 
-    const session = await stripe.checkout.sessions.create({
-        payment_method_types: ["card"],
-        line_items: lineItems,
-        mode: "payment",
-        success_url: '',
-        cancel_url: '',
-    })
-    res.json({ id: session.id })
 
-})
 
 app.use('/user', userRoutes);
 app.use('/product', productRoutes);

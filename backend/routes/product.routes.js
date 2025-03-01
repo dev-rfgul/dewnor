@@ -14,7 +14,7 @@ const app = express();
 
 
 app.get('/test', (req, res) => {
-    console.log("the test route from index.js")
+    // console.log("the test route from index.js")
     res.send("the test route from index.js")
 })
 app.get('/get-products', (req, res) => {
@@ -38,7 +38,7 @@ app.get('/get-product/:id', async (req, res) => {
 app.post("/get-selected-products", async (req, res) => {
     try {
         const { ids } = req.body;
-        console.log("Received IDs:", ids);
+        // console.log("Received IDs:", ids);
 
         if (!Array.isArray(ids) || ids.length === 0) {
             return res.status(400).json({ message: "Invalid IDs format" });
@@ -47,7 +47,7 @@ app.post("/get-selected-products", async (req, res) => {
         const objectIds = ids.map(id => new mongoose.Types.ObjectId(id));
 
         const products = await productModel.find({ _id: { $in: objectIds } });
-        console.log("Fetched Products:", products);
+        // console.log("Fetched Products:", products);
 
         res.json(products);
     } catch (error) {
@@ -58,7 +58,7 @@ app.post("/get-selected-products", async (req, res) => {
 app.post('/add-to-cart', async (req, res) => {
     try {
         const { productId, userId } = req.body;
-        console.log(productId, userId)
+        // console.log(productId, userId)
         const product = await productModel.findById(productId);
         // console.log(product)
         if (!product) {
@@ -80,7 +80,7 @@ app.post('/add-to-cart', async (req, res) => {
 app.post('/remove-from-cart', async (req, res) => {
     try {
         const { productId, userId } = req.body;
-        console.log(productId, userId)
+        // console.log(productId, userId)
         const product = await productModel.findById(productId);
         // console.log(product)
         if (!product) {

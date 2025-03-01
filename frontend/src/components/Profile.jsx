@@ -271,7 +271,6 @@ import React, { useEffect, useState } from "react";
 import { FaShoppingCart, FaCheckCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import StripeCheckout from "react-stripe-checkout";
 import { loadStripe } from "@stripe/stripe-js";
 
 
@@ -331,47 +330,37 @@ const UserProfile = () => {
             console.error("Error fetching products:", error);
         }
     };
+    console.log(cartProducts)
 
-    const handlePayment = async () => {
-        if (!stripe || !elements) return;
+    const makePayment = async () => {
+        try {
+            const response = await fetch("http://localhost:3000/makePayment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    products: cartProducts.map(product => ({
+                        _id: product.id,
+                        name: product.name,
+                        price: product.price,
+                        image: product.price[0]
+                    }))
+                }),
+            });
 
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/payment2`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ amount: 5000, currency: "usd" }),
-        });
+            const data = await response.json();
 
-        const { clientSecret } = await response.json();
+            if (!data.sessionId) {
+                throw new Error("No sessionId received from backend");
+            }
 
-        const result = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: { card: elements.getElement(CardElement) },
-        });
-
-        if (result.error) {
-            console.error(result.error.message);
-        } else {
-            console.log("Payment successful!", result.paymentIntent);
+            // Redirect to Stripe Checkout
+            const stripe = await loadStripe(`${import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}`);
+            await stripe.redirectToCheckout({ sessionId: data.sessionId });
+        } catch (error) {
+            console.error("Payment Error:", error);
         }
     };
-    const makePayment = async () => {
-        const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY)
-        const body={
-            products:cartProducts
-        }
-        const headers={
-            "Content-Type":"application/json"
-        }
-        const response=await fetch(`${import.meta.env.VITE_BACKEND_URL}/makePayment`,{
-            method:"POST",
-            headers:headers,
-            body:JSON.stringify(body)
-        })
-        const session=await response.json()
-        const result=stripe.redirectToCheckout({
-            sessionId:session.id
-        })
-        console.log(body)
-    }
+
 
 
     const handleLogout = async () => {
@@ -448,21 +437,13 @@ const UserProfile = () => {
                     </div>
                 </div>
 
-                <div className="text-center mt-6">
-                    {product && (
-                        <StripeCheckout
-                            stripeKey={import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY}
-                            token={handlePayment}
-                            name="Complete Purchase"
-                            amount={product.price * 100} // Convert to cents
-                            currency="AED"
-                        >
-                            <button className="w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg hover:bg-green-700">
-                                Pay Now
-                            </button>
-                        </StripeCheckout>
-                    )}
-                </div>
+                <button
+                    onClick={makePayment}
+                    className="w-full bg-green-600 text-white text-sm px-5 py-2 rounded-lg hover:bg-green-700"
+                >
+                    Pay Now
+                </button>
+
             </div>
         </div>
     );
