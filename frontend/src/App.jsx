@@ -10,6 +10,8 @@ import User from './components/User'
 import Profile from './components/Profile'
 import EditProduct from './components/EditProduct'
 import AllProducts from './components/AllProducts'
+import { SuccessPayment, CancelPayment } from './components/Success';
+
 
 const App = () => {
   const user = JSON.parse(localStorage.getItem("user")) || null;
@@ -29,6 +31,8 @@ const App = () => {
           <Route path='/product/:id' element={<ProductDisplay />} />
           <Route path='/profile' element={<Profile />} />
           <Route path='/all-products' element={<AllProducts />} />
+          <Route path="/payment/success" element={<SuccessPayment />} />
+          <Route path="/payment/cancel" element={<CancelPayment />} />
 
           {/* Admin Routes */}
           {isUserLoggedIn && role === 'admin' ? (

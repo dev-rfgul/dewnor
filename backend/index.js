@@ -48,79 +48,6 @@ app.get('/test', cors(corsOption), (req, res) => {
 app.get('/', (req, res) => {
     res.send(" the backend is working")
 })
-// console.log(stripe)
-app.post('/payment', (req, res) => {
-    const { product, token } = req.body;
-    console.log("PRODUCT", product);
-    console.log("PRICE", product.price);
-
-    const idempotencyKey = uuid(); // Unique key to prevent duplicate charges
-
-    stripe.customers.create({
-        email: token.email,
-        source: token.id
-    })
-        .then((customer) => {
-            return stripe.charges.create({
-                amount: product.price * 100, // Convert to cents
-                currency: 'AED',
-                customer: customer.id,
-                receipt_email: token.email,
-                description: `Purchase of ${product.name}`,
-                shipping: {
-                    name: token.card.name,
-                    address: {
-                        country: token.card.address_country
-                    }
-                }
-            }, { idempotencyKey });
-        })
-        .then((result) => res.status(200).json(result))
-        .catch(error => {
-            console.error(error);
-            res.status(500).json({ error: error.message });
-        });
-});
-app.post("/payment2", async (req, res) => {
-    try {
-        const { amount, currency } = req.body;
-
-        const paymentIntent = await stripe.paymentIntents.create({
-            amount,
-            currency,
-            payment_method_types: ["card"],
-        });
-
-        res.json({ clientSecret: paymentIntent.client_secret });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-});
-// app.post("/make-payment", async (req, res) => {
-//     const { products } = req.body;
-//     const lineItems = products.map((product) => ({
-//         price_data: {
-//             currency: "AED",
-//             product_data: {
-//                 name: product.name,
-//                 images: [product.image] // Changed 'image' to 'images'
-//             },
-//             unit_amount: product.price // Added comma before this line
-//         },
-//         quantity: product.quantity
-//     }));
-
-
-//     const session = await stripe.checkout.sessions.create({
-//         payment_method_types: ["card"],
-//         line_items: lineItems,
-//         mode: "payment",
-//         success_url: '',
-//         cancel_url: '',
-//     })
-//     res.json({ id: session.id })
-
-// })
 app.post("/makePayment", async (req, res) => {
     try {
         const { products } = req.body;
@@ -133,7 +60,10 @@ app.post("/makePayment", async (req, res) => {
         const lineItems = products.map((product) => ({
             price_data: {
                 currency: "AED",
-                product_data: { name: product.name },
+                product_data: {
+                    name: product.name,
+                    images: product.image ? [product.image] : [] // Ensure it's an array
+                },
                 unit_amount: product.price * 100, // Convert to cents
             },
             quantity: 1, // Adjust quantity as needed
@@ -144,16 +74,20 @@ app.post("/makePayment", async (req, res) => {
             payment_method_types: ["card"],
             mode: "payment",
             line_items: lineItems,
-            success_url: "http://localhost:5173/success",
-            cancel_url: "http://localhost:5173/cancel",
+            success_url: `${process.env.FRONT_END_URL}/payment/success`,
+            cancel_url: `${process.env.FRONT_END_URL}/payment/cancel`,
+
         });
 
+        console.log("Payment session created successfully");
         res.json({ sessionId: session.id });
+
     } catch (error) {
         console.error("Payment Error:", error);
         res.status(500).json({ error: "Failed to create Stripe session" });
     }
 });
+
 
 
 
