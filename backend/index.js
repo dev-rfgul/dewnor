@@ -2,7 +2,6 @@ import express from 'express';
 import dotenv from 'dotenv'
 import cors from 'cors';
 import Stripe from 'stripe';
-import { v4 as uuid } from 'uuid';
 
 
 import { connectDB } from './config/db.js';
@@ -87,6 +86,7 @@ app.post("/makePayment", async (req, res) => {
         res.status(500).json({ error: "Failed to create Stripe session" });
     }
 });
+
 
 
 

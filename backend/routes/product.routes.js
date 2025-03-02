@@ -80,7 +80,7 @@ app.post('/add-to-cart', async (req, res) => {
 app.post('/remove-from-cart', async (req, res) => {
     try {
         const { productId, userId } = req.body;
-        // console.log(productId, userId)
+        console.log(productId, userId)
         const product = await productModel.findById(productId);
         // console.log(product)
         if (!product) {
