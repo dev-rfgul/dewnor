@@ -12,7 +12,7 @@ import EditProduct from './components/EditProduct'
 import AllProducts from './components/AllProducts'
 import { SuccessPayment, CancelPayment } from './components/Success';
 
-
+// changed the url to the deployed url of the backend
 const App = () => {
   const user = JSON.parse(localStorage.getItem("user")) || null;
 
