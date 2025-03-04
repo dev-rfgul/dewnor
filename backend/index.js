@@ -21,7 +21,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // console.log("the stripe key is ", process.env.STRIPE_SECRET_KEY)
 
 var corsOption = {
-    origin: process.env.FRONT_END_URL,  // No empty strings, must match frontend
+    origin: "https://dewnor-frontend.onrender.com/",  // No empty strings, must match frontend
     credentials: true,     // Allow cookies
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
     allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
