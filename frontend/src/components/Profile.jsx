@@ -71,7 +71,7 @@ const UserProfile = () => {
                         _id: product.id,
                         name: product.name,
                         price: product.price,
-                        image: product.images.length > 0 ? product.images[0] : "" // Use the first image
+                        image: product.images.length > 0 ? product.images[0] : "https://www.dewnor.com/wp-content/uploads/2021/01/cropped-cropped-logo.png" // Use the first image
                     }))
                 }),
             });

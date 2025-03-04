@@ -21,7 +21,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // console.log("the stripe key is ", process.env.STRIPE_SECRET_KEY)
 
 var corsOption = {
-    origin: "https://dewnor-frontend.onrender.com",  // No empty strings, must match frontend
+    origin: ["https://dewnor-frontend.onrender.com",process.env.FRONT_END_URL],  // No empty strings, must match frontend
     credentials: true,     // Allow cookies
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
     allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
@@ -61,7 +61,7 @@ app.post("/makePayment", async (req, res) => {
                 currency: "AED",
                 product_data: {
                     name: product.name,
-                    images: product.image ? [product.image] : [] // Ensure it's an array
+                    images: product.images ? [product.images] : [] // Ensure it's an array
                 },
                 unit_amount: product.price * 100, // Convert to cents
             },
