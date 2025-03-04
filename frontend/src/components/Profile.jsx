@@ -63,7 +63,7 @@ const UserProfile = () => {
 
     const makePayment = async () => {
         try {
-            const response = await fetch("http://localhost:3000/makePayment", {
+            const response = await fetch(`${process.env.VITE_BACKEND_URL/makePayment}`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
