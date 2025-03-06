@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState,useEffect} from 'react'
 import { Route, Routes, Navigate } from 'react-router-dom'
 import Home from './Home'
 import Signup from './components/Signup'
@@ -11,6 +11,7 @@ import Profile from './components/Profile'
 import EditProduct from './components/EditProduct'
 import AllProducts from './components/AllProducts'
 import { SuccessPayment, CancelPayment } from './components/Success';
+import AlertMessage from './components/Alert'
 
 // changed the url to the deployed url of the backend
 const App = () => {
@@ -20,6 +21,12 @@ const App = () => {
   const role = user?.user?.role || null;
   const isUserLoggedIn = !!user && !!role;
   // alert(isUserLoggedIn)
+
+
+  const [alert, setAlert] = useState({ message: "", type: "" });
+
+  const showSuccess = () => setAlert({ message: "Success! Operation completed.", type: "success" });
+  const showError = () => setAlert({ message: "Error! Something went wrong.", type: "error" });
 
   return (
     <>
