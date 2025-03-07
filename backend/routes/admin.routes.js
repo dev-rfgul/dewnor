@@ -200,15 +200,13 @@ app.get('/test', (req, res) => {
 // Product routes (Protected)
 app.post('/add-product', verifyAdmin, upload.array('image'), async (req, res) => {
     try {
-        const { name, description, price, stock, color, size, SKU, category, tag } = req.body;
+        const { name, description, price, stock, size, SKU, category, tag } = req.body;
 
         if (!name || !price || !stock) {
             return res.status(400).json({ message: 'Name, price, and stock are required' });
         }
 
-        const colors = Array.isArray(color)
-            ? color.map(c => c.trim()).filter(c => c !== "")
-            : [];
+
 
         const imageUrls = req.files?.length ? await uploadImgsToCloudinary(req.files) : [];
 
@@ -217,7 +215,6 @@ app.post('/add-product', verifyAdmin, upload.array('image'), async (req, res) =>
             description,
             price: Number(price),
             stock: Number(stock),
-            color: colors,
             images: imageUrls,
             size,
             SKU,
