@@ -324,24 +324,37 @@ const ImageUploader = () => {
         selectedFiles.forEach((file) => formData.append('image', file));
 
         try {
+            const token = JSON.parse(localStorage.getItem("token"))?.token; // Extract token safely
+
+            if (!token) {
+                console.error("🚨 No token found in localStorage!");
+                toast.error("Authentication failed. Please log in again.");
+                return;
+            }
+
+            console.log("🛠️ Token being sent:", token); // Debugging
+
             const response = await axios.post(
                 `${import.meta.env.VITE_BACKEND_URL}/admin/add-product`,
                 formData,
                 {
-                    headers: { 'Content-Type': 'multipart/form-data' },
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${token}` // Send token here
+                    },
                     withCredentials: true
                 }
             );
 
-            if (response.data.message === 'Product created successfully') {
-                toast.success('Product added successfully!');
+            if (response.data.message === "Product created successfully") {
+                toast.success("Product added successfully!");
                 setProduct(INITIAL_PRODUCT_STATE);
                 setSelectedFiles([]);
-                fetchProducts(); // Refresh the product list
+                fetchProducts();
             }
         } catch (error) {
-            console.error('Error submitting product:', error);
-            toast.error(error.response?.data?.message || 'Failed to add product');
+            console.error("❌ Error submitting product:", error);
+            toast.error(error.response?.data?.message || "Failed to add product");
         } finally {
             setLoading(false);
         }
