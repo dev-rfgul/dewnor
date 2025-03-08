@@ -57,13 +57,14 @@ router.post('/login', async (req, res) => {
             { expiresIn: 30 * 24 * 60 * 60 }
         );
 
-        // Set token in an HTTP-only cookie
-        res.cookie('token', token, {
-            httpOnly: true, // Prevents JavaScript access (XSS protection)
-            secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-            sameSite: 'Strict', // Helps with CSRF protection
-            maxAge: 30 * 24 * 60 * 60 * 1000// 1 month expiration
+        res.cookie("token", token, {
+            httpOnly: true,  // Prevents client-side access
+            secure: true,    // Required for SameSite=None on HTTPS
+            sameSite: "None", // Allows cross-origin cookie sharing
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 1 month expiration
+            domain: ".onrender.com", // Enables subdomain sharing
         });
+
 
         res.status(200).json({
             message: 'Login successful',
@@ -85,11 +86,13 @@ router.post('/login', async (req, res) => {
 
 router.post('/logout', (req, res) => {
     try {
-        res.clearCookie('token', {
+        res.clearCookie("token", {
             httpOnly: true,
-            secure: process.env.NODE_ENV,
-            sameSite: 'strict'
-        })
+            secure: true, // Must match the secure setting when cookie was set
+            sameSite: "None", // Must match SameSite when cookie was set
+            domain: ".onrender.com", // Ensure it's cleared across subdomains
+        });
+        
 
         res.status(200).json({ message: 'Logout successfull' })
     } catch (error) {
