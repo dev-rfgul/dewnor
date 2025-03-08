@@ -324,8 +324,8 @@ const ImageUploader = () => {
         selectedFiles.forEach((file) => formData.append('image', file));
 
         try {
-            const token = JSON.parse(localStorage.getItem("token"))?.token; // Extract token safely
-
+            const token = JSON.parse(localStorage.getItem("user"))?.token; // Extract token safely
+            console.log(token)
             if (!token) {
                 console.error("🚨 No token found in localStorage!");
                 toast.error("Authentication failed. Please log in again.");
@@ -363,25 +363,40 @@ const ImageUploader = () => {
     const handleDelete = async (id) => {
         const confirmDelete = window.confirm("Do you want to delete this product?");
         if (!confirmDelete) return;
-
+    
         try {
+            const token = JSON.parse(localStorage.getItem("user"))?.token; // Extract token safely
+    
+            if (!token) {
+                console.error("🚨 No token found in localStorage!");
+                toast.error("Authentication failed. Please log in again.");
+                return;
+            }
+    
+            console.log("🛠️ Token being sent:", token); // Debugging
+    
             const response = await axios.delete(
                 `${import.meta.env.VITE_BACKEND_URL}/admin/delete-product/${id}`,
-                { withCredentials: true }
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // Send token in Authorization header
+                    },
+                    withCredentials: true,
+                }
             );
-
+    
             if (response.status === 200) {
                 toast.success("Product deleted successfully");
-                // Filter out the deleted product from state instead of refetching
                 setProducts(products.filter(product => product._id !== id));
             } else {
                 toast.error("Failed to delete product");
             }
         } catch (error) {
-            console.error('Error deleting product:', error);
+            console.error("❌ Error deleting product:", error);
             toast.error(error.response?.data?.message || "An error occurred while deleting the product");
         }
     };
+    
 
     // Form input field component to reduce repetition
     const FormField = ({ name, type = "text", required = true }) => (

@@ -13,7 +13,7 @@ import cookieParser from 'cookie-parser';
 
 
 
-const FRONT_END_URL = process.env.FRONT_END_URL || 'https://dewnor-frontend.onrender.com'
+
 
 const app = express();
 dotenv.config();
@@ -21,7 +21,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // console.log("the stripe key is ", process.env.STRIPE_SECRET_KEY)
 
 var corsOption = {
-    origin: [FRONT_END_URL],  // No empty strings, must match frontend
+    origin: ["https://dewnor-frontend.onrender.com",process.env.FRONT_END_URL],  // No empty strings, must match frontend
     credentials: true,     // Allow cookies
     methods: ["GET", "POST", "PUT", "DELETE"], // Allowed methods
     allowedHeaders: ["Content-Type", "Authorization"], // Allowed headers
@@ -34,10 +34,6 @@ connectDB();
 cloudinaryConnect();
 app.use(express.json());
 app.use(cookieParser())
-app.use((req, res, next) => {
-    console.log("🔹 Headers Received:", req.headers);
-    next();
-});
 
 
 // console.log(process.env.FRONT_END_URL);
