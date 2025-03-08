@@ -73,10 +73,24 @@ const EditProduct = () => {
         selectedFiles.forEach(file => formData.append('images', file)); // Add new images
 
         try {
+
+            const token = JSON.parse(localStorage.getItem("user"))?.token; // Extract token safely
+            console.log(token)
+            if (!token) {
+                console.error("🚨 No token found in localStorage!");
+                toast.error("Authentication failed. Please log in again.");
+                return;
+            }
+
+            console.log("🛠️ Token being sent:", token); // Debugging
+
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/edit-product/${id}`, {
                 method: 'PUT',
                 body: formData,
-                credentials:"include"
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                credentials: "include"
             });
 
             if (response.ok) {
@@ -119,7 +133,7 @@ const EditProduct = () => {
 
             ))}
             <div className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:outline-none">
-         
+
 
             </div>
 
