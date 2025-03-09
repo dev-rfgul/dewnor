@@ -193,9 +193,10 @@ const UserProfile = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
     const [error, setError] = useState(null);
+    const [showAdminBtn, setShowAdminBtn] = useState(false)
 
     const navigate = useNavigate();
-    
+
     // Calculate cart total
     const cartTotal = useMemo(() => {
         return cartProducts.reduce((sum, product) => sum + Number(product.price), 0).toFixed(2);
@@ -208,19 +209,24 @@ const UserProfile = () => {
                 if (!storedUser) {
                     throw new Error("No user found in localStorage");
                 }
-                
+
                 const parsedUser = JSON.parse(storedUser);
                 setUserId(parsedUser.user.id);
-                
+
                 const response = await fetch(
                     `${import.meta.env.VITE_BACKEND_URL}/user/get-user/${parsedUser.user.id}`
                 );
-                
+
                 if (!response.ok) {
                     throw new Error("Failed to fetch user data");
                 }
-                
+
                 const data = await response.json();
+                if (data.user.role === "admin") navigate("/admin")
+
+
+
+
                 setUserData(data.user);
 
                 if (data.user.cart && data.user.cart.length > 0) {
@@ -260,9 +266,9 @@ const UserProfile = () => {
             alert("Your cart is empty");
             return;
         }
-        
+
         setIsProcessingPayment(true);
-        
+
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/makepayment`, {
                 method: "POST",
@@ -272,8 +278,8 @@ const UserProfile = () => {
                         _id: product._id,
                         name: product.name,
                         price: product.price,
-                        image: product.images?.length > 0 
-                            ? product.images[0] 
+                        image: product.images?.length > 0
+                            ? product.images[0]
                             : "https://www.dewnor.com/wp-content/uploads/2021/01/cropped-cropped-logo.png"
                     }))
                 }),
@@ -288,7 +294,7 @@ const UserProfile = () => {
             // Redirect to Stripe Checkout
             const stripe = await loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
             const { error } = await stripe.redirectToCheckout({ sessionId: data.sessionId });
-            
+
             if (error) {
                 throw new Error(error.message);
             }
@@ -321,10 +327,10 @@ const UserProfile = () => {
                 `${import.meta.env.VITE_BACKEND_URL}/product/remove-from-cart`,
                 { productId, userId }
             );
-            
+
             // Update the cart products immediately for better UX
             setCartProducts((prev) => prev.filter((product) => product._id !== productId));
-            
+
             // Also update the userData to reflect the current cart state
             if (userData) {
                 setUserData({
@@ -352,8 +358,8 @@ const UserProfile = () => {
             <div className="max-w-4xl mx-auto text-center mt-10 p-6 bg-red-50 rounded-lg border border-red-200">
                 <h2 className="text-2xl font-bold text-red-700 mb-2">Error Loading Profile</h2>
                 <p className="text-red-600">{error}</p>
-                <button 
-                    onClick={() => navigate("/login")} 
+                <button
+                    onClick={() => navigate("/login")}
                     className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                     Return to Login
@@ -367,8 +373,8 @@ const UserProfile = () => {
             <div className="max-w-4xl mx-auto text-center mt-10 p-6 bg-yellow-50 rounded-lg border border-yellow-200">
                 <h2 className="text-2xl font-bold text-yellow-700 mb-2">Session Expired</h2>
                 <p className="text-yellow-600">Please log in again to access your profile.</p>
-                <button 
-                    onClick={() => navigate("/login")} 
+                <button
+                    onClick={() => navigate("/login")}
                     className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                     Go to Login
@@ -380,6 +386,7 @@ const UserProfile = () => {
     return (
         <div className="max-w-4xl mx-auto bg-white p-6 md:p-10 rounded-3xl shadow-2xl hover:shadow-3xl transition-shadow duration-300 ease-in-out my-8">
             {/* User Info Section */}
+
             <div className="flex flex-col md:flex-row items-center md:space-x-8 border-b pb-6">
                 <div className="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white text-4xl md:text-5xl font-bold shadow-lg mb-4 md:mb-0">
                     {userData?.name?.charAt(0)?.toUpperCase() || <FaUserCircle />}
@@ -389,8 +396,8 @@ const UserProfile = () => {
                     <p className="text-lg text-gray-500 capitalize">{userData.role}</p>
                     <p className="text-sm text-gray-400 mt-1">{userData.email}</p>
                 </div>
-                <button 
-                    onClick={handleLogout} 
+                <button
+                    onClick={handleLogout}
                     className="mt-4 md:mt-0 px-4 py-2 bg-red-100 text-red-600 rounded-lg font-semibold hover:bg-red-200 transition"
                 >
                     Logout
@@ -407,24 +414,24 @@ const UserProfile = () => {
                             {cartProducts.length} {cartProducts.length === 1 ? 'item' : 'items'}
                         </span>
                     </h3>
-                    
+
                     {cartProducts.length > 0 ? (
                         <>
                             <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                                 {cartProducts.map((product) => (
                                     <div key={product._id} className="border rounded-xl shadow-md bg-white hover:shadow-lg transition-shadow overflow-hidden">
                                         <div className="h-48 overflow-hidden relative">
-                                            <img 
-                                                src={product.images?.[0] || "https://www.dewnor.com/wp-content/uploads/2021/01/cropped-cropped-logo.png"} 
-                                                alt={product.name} 
-                                                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" 
+                                            <img
+                                                src={product.images?.[0] || "https://www.dewnor.com/wp-content/uploads/2021/01/cropped-cropped-logo.png"}
+                                                alt={product.name}
+                                                className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                                             />
                                         </div>
                                         <div className="p-4">
                                             <h3 className="text-base font-semibold text-gray-900 line-clamp-2 h-12">{product.name}</h3>
                                             <span className="text-green-600 font-bold text-lg block mt-2">{product.price} د.إ</span>
-                                            <button 
-                                                onClick={() => removeFromCart(product._id)} 
+                                            <button
+                                                onClick={() => removeFromCart(product._id)}
                                                 className="mt-4 w-full bg-red-600 text-white text-sm px-5 py-2 rounded-lg hover:bg-red-700 flex items-center justify-center"
                                             >
                                                 <FaTrash className="mr-2" /> Remove
@@ -433,13 +440,13 @@ const UserProfile = () => {
                                     </div>
                                 ))}
                             </div>
-                            
+
                             <div className="mt-8 border-t pt-6">
                                 <div className="flex justify-between items-center mb-6">
                                     <span className="text-xl font-semibold text-gray-800">Total:</span>
                                     <span className="text-2xl font-bold text-green-600">{cartTotal} د.إ</span>
                                 </div>
-                                
+
                                 <button
                                     onClick={makePayment}
                                     disabled={isProcessingPayment}
@@ -461,8 +468,8 @@ const UserProfile = () => {
                         <div className="mt-6 text-center py-10 bg-gray-100 rounded-xl">
                             <FaShoppingCart className="mx-auto text-gray-400 text-5xl mb-4" />
                             <p className="text-gray-500 text-lg">Your cart is empty.</p>
-                            <button 
-                                onClick={() => navigate("/products")} 
+                            <button
+                                onClick={() => navigate("/products")}
                                 className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                             >
                                 Browse Products

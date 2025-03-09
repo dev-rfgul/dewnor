@@ -323,7 +323,7 @@ const Explore = () => {
                                         key={fadeKeys[actualIndex]}
                                         src={item.images[currentImageIndices[actualIndex]]}
                                         alt={`Explore ${item.category}`}
-                                        className="absolute inset-0 w-full h-full object-cover opacity-0 transition-opacity duration-1000 transform scale-105 group-hover:scale-110 transition-transform duration-7000"
+                                        className="absolute inset-0 w-full h-full object-cover opacity-0  transform scale-105 group-hover:scale-110 transition-transform duration-7000"
                                         onLoad={(e) => e.target.classList.replace("opacity-0", "opacity-100")}
                                     />
 
