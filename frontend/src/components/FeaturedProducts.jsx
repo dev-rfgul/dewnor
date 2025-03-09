@@ -8,7 +8,7 @@
 // const ProductCard = memo(({ product, loading, onAddToCart }) => {
 //     const [alert, setAlert] = useState({ message: "", type: "" });
 //     const navigate = useNavigate();
-    
+
 //     const handleBuyNow = async (productId) => {
 //         try {
 //             await onAddToCart(productId);
@@ -157,11 +157,11 @@
 //             try {
 //                 // You could add query params for filtering based on your filters state
 //                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-products`);
-                
+
 //                 if (!response.ok) {
 //                     throw new Error(`HTTP error! Status: ${response.status}`);
 //                 }
-                
+
 //                 const data = await response.json();
 //                 setProducts(data);
 //                 setError(null);
@@ -173,7 +173,7 @@
 //                 setLoading(false);
 //             }
 //         };
-        
+
 //         fetchProducts();
 //     }, [filters]);
 
@@ -222,11 +222,11 @@
 //                     />
 //                 </div>
 //             )}
-            
+
 //             {/* Filter Controls - Can be expanded */}
 //             <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
 //                 <h2 className="text-2xl font-bold text-gray-800">Products</h2>
-                
+
 //                 <div className="flex flex-wrap gap-4">
 //                     <select 
 //                         className="border rounded-lg px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -240,13 +240,13 @@
 //                     </select>
 //                 </div>
 //             </div>
-            
+
 //             {error && (
 //                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
 //                     <p>{error}</p>
 //                 </div>
 //             )}
-            
+
 //             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 //                 {loading
 //                     ? Array.from({ length: 8 }).map((_, index) => (
@@ -307,18 +307,7 @@ const ProductGrid = () => {
     }, []);
 
     // Fetch categories
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/product/categories`);
-                setCategories(response.data);
-            } catch (error) {
-                console.error("Error fetching categories:", error);
-            }
-        };
-        
-        fetchCategories();
-    }, []);
+
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -326,13 +315,13 @@ const ProductGrid = () => {
             try {
                 // You could add query params for filtering based on your filters state
                 const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-products`);
-                
+
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-                
+
                 const data = await response.json();
-                setProducts(data);
+                setProducts(data.products);
                 setError(null);
             } catch (error) {
                 console.error("Error fetching products:", error);
@@ -342,15 +331,15 @@ const ProductGrid = () => {
                 setLoading(false);
             }
         };
-        
+
         fetchProducts();
     }, [filters.category]);
 
     const addToCart = useCallback(async (productId) => {
         if (!userId) {
-            setGlobalAlert({ 
-                message: "Please log in to add items to your cart", 
-                type: "warning" 
+            setGlobalAlert({
+                message: "Please log in to add items to your cart",
+                type: "warning"
             });
             return Promise.reject(new Error("User not logged in"));
         }
@@ -376,18 +365,18 @@ const ProductGrid = () => {
     // Filter and sort products function
     const filteredProducts = React.useMemo(() => {
         let result = [...products];
-        
+
         // Apply category filter
         if (filters.category !== "all") {
             result = result.filter(product => product.category === filters.category);
         }
-        
+
         // Apply price range filter
-        result = result.filter(product => 
-            product.price >= filters.priceRange[0] && 
+        result = result.filter(product =>
+            product.price >= filters.priceRange[0] &&
             product.price <= filters.priceRange[1]
         );
-        
+
         // Apply sorting
         switch (filters.sort) {
             case "price-low":
@@ -405,7 +394,7 @@ const ProductGrid = () => {
                 result.sort((a, b) => new Date(b.createdAt || b._id) - new Date(a.createdAt || a._id));
                 break;
         }
-        
+
         return result;
     }, [products, filters]);
 
@@ -422,28 +411,28 @@ const ProductGrid = () => {
             {/* Global Alert */}
             {globalAlert.message && (
                 <div className="mb-6">
-                    <AlertMessage 
-                        message={globalAlert.message} 
-                        type={globalAlert.type} 
-                        onClose={() => setGlobalAlert({ message: "", type: "" })} 
+                    <AlertMessage
+                        message={globalAlert.message}
+                        type={globalAlert.type}
+                        onClose={() => setGlobalAlert({ message: "", type: "" })}
                     />
                 </div>
             )}
-            
+
             {/* Filter Controls */}
             <div className="mb-8">
                 <h2 className="text-2xl font-bold text-gray-800 mb-4">Products</h2>
-                
+
                 <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
                     <h3 className="font-semibold text-gray-700 mb-3">Filters</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         {/* Sort By Filter */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Sort By</label>
-                            <select 
+                            <select
                                 className="w-full border rounded-lg px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={filters.sort}
-                                onChange={(e) => setFilters({...filters, sort: e.target.value})}
+                                onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
                             >
                                 <option value="newest">Newest</option>
                                 <option value="price-low">Price: Low to High</option>
@@ -455,10 +444,10 @@ const ProductGrid = () => {
                         {/* Category Filter */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-                            <select 
+                            <select
                                 className="w-full border rounded-lg px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 value={filters.category}
-                                onChange={(e) => setFilters({...filters, category: e.target.value})}
+                                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
                             >
                                 <option value="all">All Categories</option>
                                 {categories.map(category => (
@@ -473,8 +462,8 @@ const ProductGrid = () => {
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Price Range</label>
                             <div className="flex items-center">
-                                <input 
-                                    type="number" 
+                                <input
+                                    type="number"
                                     className="w-full border rounded-lg px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Min"
                                     value={filters.priceRange[0]}
@@ -482,8 +471,8 @@ const ProductGrid = () => {
                                     min="0"
                                 />
                                 <span className="mx-2">-</span>
-                                <input 
-                                    type="number" 
+                                <input
+                                    type="number"
                                     className="w-full border rounded-lg px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Max"
                                     value={filters.priceRange[1]}
@@ -495,25 +484,25 @@ const ProductGrid = () => {
                     </div>
                 </div>
             </div>
-            
+
             {error && (
                 <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
                     <p>{error}</p>
                 </div>
             )}
-            
+
             {/* Results Summary */}
             <div className="mb-4 flex justify-between items-center">
                 <p className="text-gray-600">
                     Showing {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
                 </p>
-                
+
                 {/* Mobile Sort Option */}
                 <div className="md:hidden">
-                    <select 
+                    <select
                         className="border rounded-lg px-3 py-2 bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                         value={filters.sort}
-                        onChange={(e) => setFilters({...filters, sort: e.target.value})}
+                        onChange={(e) => setFilters({ ...filters, sort: e.target.value })}
                     >
                         <option value="newest">Newest</option>
                         <option value="price-low">Price: Low to High</option>
@@ -522,17 +511,17 @@ const ProductGrid = () => {
                     </select>
                 </div>
             </div>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {loading
                     ? Array.from({ length: 8 }).map((_, index) => (
                         <ProductCard key={`skeleton-${index}`} loading={true} />
                     ))
-                    : filteredProducts.length > 0 
+                    : filteredProducts.length > 0
                         ? filteredProducts.map((product) => (
-                            <ProductCard 
-                                key={product._id} 
-                                product={product} 
+                            <ProductCard
+                                key={product._id}
+                                product={product}
                                 loading={false}
                                 onAddToCart={addToCart}
                             />
@@ -540,7 +529,7 @@ const ProductGrid = () => {
                         : (
                             <div className="col-span-full text-center py-10">
                                 <p className="text-gray-500 text-lg">No products found matching your filters</p>
-                                <button 
+                                <button
                                     className="mt-4 text-blue-500 hover:text-blue-700"
                                     onClick={() => setFilters({
                                         sort: "newest",

@@ -13,14 +13,17 @@ const app = express();
 
 
 
+
 app.get('/test', (req, res) => {
     // console.log("the test route from index.js")
     res.send("the test route from index.js")
 })
-app.get('/get-products', (req, res) => {
-    productModel.find({})
-        .then(products => res.json(products))
-        .catch(error => res.json(error))
+app.get('/get-products', async (req, res) => {
+    const products = await productModel.find({})
+    if (!products || products == 0) {
+        return res.status(404).json({ message: "no product found" })
+    }
+    res.status(200).json({ message: "product found successfully,", products: products })    
 })
 app.get('/get-product/:id', async (req, res) => {
     try {
@@ -101,6 +104,22 @@ app.post('/remove-from-cart', async (req, res) => {
         res.status(500).json({ error: error.message })
     }
 
+})
+app.get('/categories/:category', async (req, res) => {
+    try {
+        const { category } = req.params;
+        const products = await productModel.find({ tag: category });
+        console.log(category)
+        typeof (console.log(category))
+        if (!products || products.length == 0) {
+            return res.status(404).json({ message: `no products found in ${category} category ` })
+        }
+        res.status(200).json({ message: "products found successfully", products: products })
+    } catch (error) {
+        console.error('Error fetching category:', error);
+        res.status(500).json({ message: 'Server error' });
+
+    }
 })
 
 

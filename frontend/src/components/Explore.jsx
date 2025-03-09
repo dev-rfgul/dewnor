@@ -99,8 +99,10 @@
 // export default Explore;
 
 import React, { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Explore = () => {
+    const navigate = useNavigate();
     // Enhanced data with more information and options
     const data = [
         {
@@ -264,16 +266,24 @@ const Explore = () => {
             return newKeys;
         });
     };
+    const hanldeCategory = (category) => {
+        // const newcategory = category.toLowerCase()
+
+        navigate(`/products/${category}`)
+
+    }
 
     return (
         <div className="py-16 px-4 bg-gray-50">
             <div className="max-w-6xl mx-auto">
+                {/* heading */}
                 <div className="flex flex-col sm:flex-row items-center justify-between mb-12">
                     <div>
                         <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-2">Explore Collections</h2>
                         <p className="text-gray-600 max-w-xl">Discover our curated selection of premium products designed for modern living.</p>
                     </div>
 
+                    {/* btns title eg:bestseller , new  */}
                     <div className="flex space-x-2 mt-6 sm:mt-0">
                         <button
                             onClick={() => setFilterType('all')}
@@ -311,6 +321,8 @@ const Explore = () => {
                         return (
                             <div
                                 key={item.id}
+                                onClick={() => { hanldeCategory(item.category) }}
+
                                 ref={el => categoryRefs.current[categoryIndex] = el}
                                 className="relative overflow-hidden rounded-xl shadow-lg transform transition-all duration-500 opacity-0 translate-y-8 scale-95 group"
                                 style={{ height: "420px" }}
