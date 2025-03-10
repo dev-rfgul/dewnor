@@ -274,14 +274,15 @@ const UserProfile = () => {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
+                    userId: userId,
                     products: cartProducts.map(product => ({
                         _id: product._id,
                         name: product.name,
                         price: product.price,
-                        image: product.images?.length > 0
-                            ? product.images[0]
-                            : "https://www.dewnor.com/wp-content/uploads/2021/01/cropped-cropped-logo.png"
-                    }))
+                        images: product.images && product.images.length > 0
+                            ? [product.images[0]]
+                            : ["https://www.dewnor.com/wp-content/uploads/2021/01/cropped-cropped-logo.png"]
+                    })),
                 }),
             });
 
