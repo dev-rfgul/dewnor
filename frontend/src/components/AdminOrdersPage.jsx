@@ -1,4 +1,4 @@
-// src/pages/AdminOrdersPage.jsx
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
@@ -9,6 +9,8 @@ const AdminOrdersPage = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [filterStatus, setFilterStatus] = useState('all');
+    // Replace global message with a map of order IDs to messages
+    const [statusMessages, setStatusMessages] = useState({});
 
     useEffect(() => {
         const fetchOrders = async () => {
@@ -69,6 +71,51 @@ const AdminOrdersPage = () => {
             });
         } catch (e) {
             return dateString;
+        }
+    };
+
+    // Updated to handle individual order status changes and messages
+    const handleStatusChange = async (orderId, newStatus) => {
+        try {
+            const res = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/analytics/update-order-status`, {
+                orderID: orderId,
+                orderStatus: newStatus,
+            });
+            
+            // Update message for this specific order only
+            setStatusMessages(prev => ({
+                ...prev,
+                [orderId]: res.data.message || 'Status updated successfully!'
+            }));
+            
+            // Update the orders state with the new status
+            setOrders(orders.map(order => 
+                order._id === orderId ? { ...order, order_status: newStatus } : order
+            ));
+            
+            // Clear the message after 3 seconds
+            setTimeout(() => {
+                setStatusMessages(prev => {
+                    const newMessages = {...prev};
+                    delete newMessages[orderId];
+                    return newMessages;
+                });
+            }, 3000);
+            
+        } catch (error) {
+            setStatusMessages(prev => ({
+                ...prev,
+                [orderId]: error.response?.data?.message || 'Error updating order'
+            }));
+            
+            // Clear error message after 3 seconds
+            setTimeout(() => {
+                setStatusMessages(prev => {
+                    const newMessages = {...prev};
+                    delete newMessages[orderId];
+                    return newMessages;
+                });
+            }, 3000);
         }
     };
 
@@ -135,10 +182,13 @@ const AdminOrdersPage = () => {
                                 Total
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Status
+                                Payment Status
                             </th>
                             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Actions
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                Order status
                             </th>
                         </tr>
                     </thead>
@@ -147,8 +197,7 @@ const AdminOrdersPage = () => {
                             filteredOrders.map((order) => (
                                 <tr
                                     key={order._id || order.payment_intent}
-                                    className="hover:bg-gray-50 cursor-pointer"
-                                    onClick={() => handleOrderClick(order)}
+                                    className="hover:bg-gray-50"
                                 >
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <div className="text-sm text-gray-900">
@@ -174,31 +223,59 @@ const AdminOrdersPage = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.payment_status === 'paid'
-                                            ? 'bg-green-100 text-green-800'
-                                            : order.payment_status === 'pending'
-                                                ? 'bg-yellow-100 text-yellow-800'
-                                                : 'bg-red-100 text-red-800'
-                                            }`}>
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                            order.payment_status === 'paid'
+                                                ? 'bg-green-100 text-green-800'
+                                                : order.payment_status === 'pending'
+                                                    ? 'bg-yellow-100 text-yellow-800'
+                                                    : 'bg-red-100 text-red-800'
+                                        }`}>
                                             {order.payment_status}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                         <button
                                             className="text-indigo-600 hover:text-indigo-900"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                handleOrderClick(order);
-                                            }}
+                                            onClick={() => handleOrderClick(order)}
                                         >
                                             View Details
                                         </button>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        {/* Display current order status with different colors */}
+                                        <div className="mb-2">
+                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                                                order.order_status === 'completed'
+                                                    ? 'bg-green-100 text-green-800'
+                                                    : order.order_status === 'dispatched'
+                                                        ? 'bg-blue-100 text-blue-800'
+                                                        : 'bg-yellow-100 text-yellow-800'
+                                            }`}>
+                                                {order.orderStatus || 'pending'}
+                                            </span>
+                                            {console.log(order.orderStatus)}
+                                        </div>
+                                        <select
+                                            name="orderStatus"
+                                            value={order.order_status || 'pending'}
+                                            onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                                            className="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <option value="pending">Pending</option>
+                                            <option value="dispatched">Dispatched</option>
+                                            <option value="completed">Completed</option>
+                                        </select>
+                                        {/* Show message only for this specific order */}
+                                        {statusMessages[order._id] && (
+                                            <p className="text-xs text-green-500 mt-1">{statusMessages[order._id]}</p>
+                                        )}
                                     </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                                <td colSpan="7" className="px-6 py-4 text-center text-gray-500">
                                     No orders found matching your criteria
                                 </td>
                             </tr>
@@ -237,14 +314,27 @@ const AdminOrdersPage = () => {
                                         <p className="font-medium truncate">{selectedOrder.payment_intent}</p>
                                     </div>
                                     <div>
-                                        <p className="text-sm text-gray-500">Status</p>
-                                        <p className={`font-medium ${selectedOrder.payment_status === 'paid'
-                                            ? 'text-green-600'
-                                            : selectedOrder.payment_status === 'pending'
-                                                ? 'text-yellow-600'
-                                                : 'text-red-600'
-                                            }`}>
+                                        <p className="text-sm text-gray-500">Payment Status</p>
+                                        <p className={`font-medium ${
+                                            selectedOrder.payment_status === 'paid'
+                                                ? 'text-green-600'
+                                                : selectedOrder.payment_status === 'pending'
+                                                    ? 'text-yellow-600'
+                                                    : 'text-red-600'
+                                        }`}>
                                             {selectedOrder.payment_status}
+                                        </p>
+                                    </div>
+                                    <div>
+                                        <p className="text-sm text-gray-500">Order Status</p>
+                                        <p className={`font-medium ${
+                                            selectedOrder.order_status === 'completed'
+                                                ? 'text-green-600'
+                                                : selectedOrder.order_status === 'dispatched'
+                                                    ? 'text-blue-600'
+                                                    : 'text-yellow-600'
+                                        }`}>
+                                            {selectedOrder.order_status || 'Pending'}
                                         </p>
                                     </div>
                                     <div>
@@ -349,7 +439,6 @@ const AdminOrdersPage = () => {
                                 <button
                                     className="px-4 py-2 bg-indigo-600 border border-transparent rounded-md text-sm font-medium text-white hover:bg-indigo-700"
                                     onClick={() => {
-                                        // Implement print functionality
                                         window.print();
                                     }}
                                 >

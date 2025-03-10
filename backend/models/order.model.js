@@ -4,7 +4,11 @@ import mongoose from 'mongoose';
 const orderSchema = new mongoose.Schema({
     // Basic information
     customer_email: String,
-
+    orderStatus: {
+        type: String,
+        enum: ['pending', 'dispatched', 'completed',],
+        default: 'pending'
+    },
     // Shipping information with more specific structure
     shipping: {
         name: String,
