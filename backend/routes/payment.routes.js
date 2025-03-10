@@ -3,7 +3,7 @@ import express from 'express'
 import Stripe from 'stripe';
 import bodyParser from 'body-parser';
 
-import Order from '../models/adminMsg.model.js'
+import Order from '../models/order.model.js'
 import AdminMsg from '../models/adminMsg.model.js';
 import Revenue from '../models/revenue.model.js'
 
@@ -101,16 +101,11 @@ app.post("/webhook",
     bodyParser.raw({ type: "application/json" }),
     async (req, res) => {
         const sig = req.headers["stripe-signature"];
+        if (!sig) return res.status(400).send("Stripe signature missing");
 
-        if (!sig) {
-            return res.status(400).send("Stripe signature missing");
-        }
-
+        const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
         let event;
-
         try {
-            // Fixed parameter order - body, signature, webhook secret (not stripe secret)
-            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
             event = stripe.webhooks.constructEvent(
                 req.body,
                 sig,
@@ -121,16 +116,14 @@ app.post("/webhook",
             return res.status(400).send(`Webhook Error: ${err.message}`);
         }
 
-        // Handle successful payment
         if (event.type === "checkout.session.completed") {
             const session = event.data.object;
             const metadata = session.metadata || {};
 
             try {
-                // Validate metadata
                 if (!metadata.userId || !metadata.products) {
                     console.error("Missing required metadata in webhook");
-                    return res.status(200).json({ received: true }); // Still return 200 to Stripe
+                    return res.status(200).json({ received: true });
                 }
 
                 let products;
@@ -141,19 +134,50 @@ app.post("/webhook",
                     return res.status(200).json({ received: true });
                 }
 
-                const newOrder = new Order({
-                    userId: metadata.userId,
-                    products: products,
-                    totalAmount: session.amount_total / 100,
-                    paymentId: session.id,
-                    address: metadata.address || "",
-                    status: "completed",
-                    createdAt: new Date()
+                // ✅ Get line items
+                const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
+                    limit: 100,
                 });
 
-                const savedOrder = await newOrder.save();
+                const order = new Order({
+                    customer_email: session.customer_details?.email || null,
+                    shipping: session.shipping || {},
+                    billing_details: {
+                        address: session.customer_details?.address || {},
+                        email: session.customer_details?.email || null,
+                        name: session.customer_details?.name || null,
+                        phone: session.customer_details?.phone || null
+                    },
+                    line_items: lineItems.data.map(item => ({
+                        id: item.id,
+                        description: item.description,
+                        amount_subtotal: item.amount_subtotal,
+                        amount_total: item.amount_total,
+                        currency: item.currency,
+                        quantity: item.quantity,
+                        price: {
+                            id: item.price?.id,
+                            unit_amount: item.price?.unit_amount,
+                            currency: item.price?.currency,
+                            product: item.price?.product
+                        }
+                    })),
+                    amount_total: session.amount_total,
+                    payment_status: session.payment_status,
+                    payment_intent: session.payment_intent
+                });
+                console.log(order)
+                let savedOrder;
+                try {
+                    savedOrder = await order.save();
+                    console.log('✅ Order saved!', savedOrder._id);
+                } catch (error) {
+                    console.error('❌ Order save error:', error.message);
+                    console.error('Full error:', error);
+                }
 
-                // Admin message
+
+                // Admin Message
                 await AdminMsg.create({
                     userId: metadata.userId,
                     message: `New order: ${session.id}`,
@@ -173,10 +197,9 @@ app.post("/webhook",
                     });
                 }
 
-                console.log("Order and admin updates complete");
+                console.log("✅ Order and admin updates complete");
             } catch (err) {
-                console.error("Order handling failed:", err);
-                // Still return 200 to Stripe to prevent retries
+                console.error("❌ Order handling failed:", err);
             }
         }
 
