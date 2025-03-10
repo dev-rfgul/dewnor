@@ -14,6 +14,7 @@ import userRoutes from './routes/user.routes.js';
 import productRoutes from './routes/product.routes.js';
 import adminRoutes from './routes/admin.routes.js';
 import paymentRoutes from './routes/payment.routes.js'
+import AnalyticsRoutes from './routes/analytics.routes.js'
 import { cloudinaryConnect } from './config/cloudinary.js';
 
 // Initialize app and services
@@ -68,6 +69,7 @@ app.use('/user', userRoutes);
 app.use('/product', productRoutes);
 app.use('/admin', adminRoutes);
 app.use('/payment', paymentRoutes)
+app.use('/analytics', AnalyticsRoutes)
 
 
 // Start server with proper port fallback

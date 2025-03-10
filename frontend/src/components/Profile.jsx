@@ -11,7 +11,6 @@ const UserProfile = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isProcessingPayment, setIsProcessingPayment] = useState(false);
     const [error, setError] = useState(null);
-    const [showAdminBtn, setShowAdminBtn] = useState(false)
 
     const navigate = useNavigate();
 

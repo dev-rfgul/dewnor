@@ -1,70 +1,73 @@
-// import { Link } from "react-router-dom";
 
-// const Admin = () => {
-//     return (
-//         <div className="flex h-screen">
-//             {/* Sidebar */}
-//             <nav className="bg-blue-500 w-64 p-4 text-white flex flex-col space-y-4">
-//                 <h1 className="font-bold text-2xl">Admin Panel</h1>
-//                 <Link to="/" className="hover:bg-blue-600 px-4 py-2 rounded">
-//                     Home
-//                 </Link>
-//                 <Link to="/add-product" className="hover:bg-blue-600 px-4 py-2 rounded">
-//                     Product
-//                 </Link>
-//                 <Link to="/add-users" className="hover:bg-blue-600 px-4 py-2 rounded">
-//                     Users
-//                 </Link>
-
-//             </nav>
-
-//             {/* Main Content */}
-//             <main className="flex-1 bg-gray-100 p-6">
-//                 <h2 className="text-2xl font-semibold text-gray-800">Dashboard</h2>
-//                 <p className="mt-4 text-gray-600">
-//                     Welcome to the admin panel. Use the sidebar to navigate through the
-//                     sections.
-//                 </p>
-//                 {/* Add your admin panel content here */}
-//             </main>
-//         </div>
-//     );
-// };
-
-// export default Admin;
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
-// Import icons - assume using a library like Lucide React
-// If using actual Lucide, you would import like this:
-// import { Home, Package, Users, BarChart2, Settings, LogOut, Menu, X } from 'lucide-react';
 
 const Admin = () => {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const location = useLocation();
-    
+
+    const [usersCount, setUsersCount] = useState(0)
+    const [productCount, setProductCount] = useState(0)
+    const [revenue,setRevenue]=useState(0)
+
+    const fetchUsers = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/user/get-users`);
+            const data = await response.json();
+            setUsersCount(data.length);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
+    const fetchProducts = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-products`);
+            const data = await response.json();
+            console.log(data)
+            setProductCount(data.products.length);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
+    const fetchRevenue = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analytics/total-revenue`);
+            const data = await response.json();
+            console.log(data.totalRevenue)
+            setRevenue(data.totalRevenue);
+        } catch (error) {
+            console.error("Error fetching users:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchUsers()
+        fetchProducts()
+        fetchRevenue()
+    }, [])
+
     // Mock data for dashboard stats
     const stats = [
-        { title: "Total Users", value: "2,451", change: "+12%", isPositive: true },
-        { title: "Total Products", value: "834", change: "+7.2%", isPositive: true },
-        { title: "Revenue", value: "$12,435", change: "+22%", isPositive: true },
+        { title: "Total Users", value: `${usersCount}`, change: "+12%", isPositive: true },
+        { title: "Total Products", value: `${productCount}`, change: "+7.2%", isPositive: true },
+        { title: "Revenue", value: `$${revenue}`, change: "+22%", isPositive: true },
         { title: "Pending Orders", value: "23", change: "-5%", isPositive: false },
     ];
-    
+
     const isActive = (path) => {
         return location.pathname === path ? "bg-blue-600" : "";
     };
-    
+
     return (
         <div className="flex h-screen bg-gray-50">
             {/* Mobile sidebar toggle */}
-            <button 
+            <button
                 className="fixed z-20 bottom-4 right-4 lg:hidden bg-blue-600 text-white p-2 rounded-full shadow-lg"
                 onClick={() => setSidebarOpen(!sidebarOpen)}
             >
                 {sidebarOpen ? 'X' : '☰'}
             </button>
-            
+
             {/* Sidebar */}
             <nav className={`bg-blue-700 text-white ${sidebarOpen ? 'w-64' : 'w-0 -ml-64'} lg:w-64 p-0 fixed h-full z-10 transition-all duration-300 ease-in-out lg:relative lg:translate-x-0`}>
                 <div className="p-4 flex flex-col h-full">
@@ -74,7 +77,7 @@ const Admin = () => {
                             Admin Panel
                         </h1>
                     </div>
-                    
+
                     <div className="flex-1">
                         <div className="space-y-1">
                             <Link to="/" className={`flex items-center hover:bg-blue-600 px-4 py-3 rounded transition-colors ${isActive('/')}`}>
@@ -93,13 +96,13 @@ const Admin = () => {
                                 <span className="mr-3">📊</span>
                                 Analytics
                             </Link>
-                            <Link to="/settings" className={`flex items-center hover:bg-blue-600 px-4 py-3 rounded transition-colors ${isActive('/settings')}`}>
+                            <Link to="/orders" className={`flex items-center hover:bg-blue-600 px-4 py-3 rounded transition-colors ${isActive('/settings')}`}>
                                 <span className="mr-3">⚙️</span>
-                                Settings
+                                Orders
                             </Link>
                         </div>
                     </div>
-                    
+
                     <div className="pt-6 border-t border-blue-600">
                         <button className="w-full flex items-center hover:bg-blue-600 px-4 py-3 rounded transition-colors">
                             <span className="mr-3">🚪</span>
@@ -117,7 +120,7 @@ const Admin = () => {
                             <h2 className="text-3xl font-bold text-gray-800">Dashboard</h2>
                             <p className="text-gray-600">Welcome back, Admin</p>
                         </div>
-                        
+
                         <div className="mt-4 md:mt-0 flex space-x-3">
                             <button className="bg-white shadow-sm px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
                                 Export Data
@@ -160,8 +163,8 @@ const Admin = () => {
                                             </div>
                                             <div>
                                                 <p className="font-medium">
-                                                    {item % 2 === 0 
-                                                        ? 'New user registered' 
+                                                    {item % 2 === 0
+                                                        ? 'New user registered'
                                                         : 'Product updated'}
                                                 </p>
                                                 <p className="text-sm text-gray-500">
@@ -193,7 +196,7 @@ const Admin = () => {
                     </div>
                 </div>
             </main>
-        </div>  
+        </div>
     );
 };
 
