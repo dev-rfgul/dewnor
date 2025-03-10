@@ -71,6 +71,10 @@ app.post("/makePayment", async (req, res) => {
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",
+            billing_address_collection: 'required',
+            shipping_address_collection: {
+                allowed_countries: ['AE'], // Customize this
+            },
             line_items: lineItems,
             success_url: `${process.env.FRONT_END_URL}/payment/success`,
             cancel_url: `${process.env.FRONT_END_URL}/payment/cancel`,
