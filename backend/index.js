@@ -219,7 +219,7 @@ connectDB();
 cloudinaryConnect();
 // Use express.json() for all non-webhook routes
 app.use((req, res, next) => {
-    if (req.originalUrl === '/webhook') {
+    if (req.originalUrl === '/payment/webhook') {
         next(); // Skip express.json for webhook route
     } else {
         express.json({ limit: "10mb" })(req, res, next);

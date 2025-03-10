@@ -3,11 +3,6 @@ import express from 'express'
 import Stripe from 'stripe';
 import bodyParser from 'body-parser';
 
-
-
-
-
-
 import Order from '../models/adminMsg.model.js'
 import AdminMsg from '../models/adminMsg.model.js';
 import Revenue from '../models/revenue.model.js'
@@ -97,7 +92,6 @@ app.post("/makePayment", async (req, res) => {
         });
     }
 });
-
 // Webhook route - needs raw body
 app.post("/webhook",
     bodyParser.raw({ type: "application/json" }),
@@ -112,6 +106,7 @@ app.post("/webhook",
 
         try {
             // Fixed parameter order - body, signature, webhook secret (not stripe secret)
+            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
             event = stripe.webhooks.constructEvent(
                 req.body,
                 sig,
