@@ -174,6 +174,7 @@ import upload from '../middleware/multer.js';
 import productModel from '../models/product.model.js';
 import userModel from '../models/user.model.js';
 import verifyAdmin from '../middleware/verifyAdmin.js';
+import bcrypt from 'bcrypt'
 
 const app = express();
 cloudinaryConnect();
@@ -273,16 +274,39 @@ app.put('/edit-product/:id', verifyAdmin, upload.array('images', 5), async (req,
     }
 });
 
-// User routes (Protected)
 app.post('/add-user', verifyAdmin, async (req, res) => {
     try {
         const { name, email, password, role } = req.body;
-        const user = new userModel({ name, email, password, role });
+
+        if (!name || !email || !password || !role) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
+        const existingUser = await userModel.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: 'Email already exists' });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = new userModel({
+            name,
+            email,
+            password: hashedPassword,
+            role,
+        });
+
         await user.save();
-        res.status(200).json({ message: "User created Successfully", user });
+
+        const userWithoutPassword = { ...user._doc };
+        delete userWithoutPassword.password;
+
+        res.status(201).json({ message: "User created successfully", user: userWithoutPassword });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ message: "Error creating user", error: error.message });
     }
 });
+
 
 export default app;

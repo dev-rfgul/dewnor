@@ -99,7 +99,6 @@ router.post('/logout', (req, res) => {
         res.send(500).json({ message: 'server error ', error: error.message })
     }
 })
-
 router.put("/update-role", async (req, res) => {
     const { userId, role } = req.body;
 

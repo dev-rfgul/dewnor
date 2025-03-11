@@ -21,39 +21,37 @@ const User = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         const { name, email, password, cart, role } = user;
-
+    
         if (!name || !email || !password || !role) {
             alert("Please fill all the required fields");
             return;
         }
-
+    
         try {
-            const token = JSON.parse(localStorage.getItem("user"))?.token; // Extract token safely
-            console.log(token)
+            const token = JSON.parse(localStorage.getItem("user"))?.token;
             if (!token) {
                 console.error("🚨 No token found in localStorage!");
                 toast.error("Authentication failed. Please log in again.");
                 return;
             }
-
-            console.log("🛠️ Token being sent:", token); // Debugging
-
+    
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/add-user`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "multipart/form-data",
-                    Authorization: `Bearer ${token}` // Send token here
+                    "Content-Type": "application/json", // ✅ Proper content type
+                    Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify(user),
+                body: JSON.stringify({ name, email, password, role }), // ✅ Send JSON
                 credentials: "include"
             });
-
+    
             const data = await response.json();
+    
             if (response.ok) {
                 alert("User added successfully!");
-                setUsers([...users, data]);
+                setUsers(prev => [...prev, data.user]); // updated to push the actual user
                 setUser({ name: "", email: "", password: "", cart: "", role: "user" });
             } else {
                 alert(data.message || "Failed to add user");
@@ -63,6 +61,7 @@ const User = () => {
             alert("Error adding user");
         }
     };
+    
 
     const fetchUsers = async () => {
         try {
