@@ -81,37 +81,37 @@ const AdminOrdersPage = () => {
                 orderID: orderId,
                 orderStatus: newStatus,
             });
-            
+
             // Update message for this specific order only
             setStatusMessages(prev => ({
                 ...prev,
                 [orderId]: res.data.message || 'Status updated successfully!'
             }));
-            
+
             // Update the orders state with the new status
-            setOrders(orders.map(order => 
+            setOrders(orders.map(order =>
                 order._id === orderId ? { ...order, order_status: newStatus } : order
             ));
-            
+
             // Clear the message after 3 seconds
             setTimeout(() => {
                 setStatusMessages(prev => {
-                    const newMessages = {...prev};
+                    const newMessages = { ...prev };
                     delete newMessages[orderId];
                     return newMessages;
                 });
             }, 3000);
-            
+
         } catch (error) {
             setStatusMessages(prev => ({
                 ...prev,
                 [orderId]: error.response?.data?.message || 'Error updating order'
             }));
-            
+
             // Clear error message after 3 seconds
             setTimeout(() => {
                 setStatusMessages(prev => {
-                    const newMessages = {...prev};
+                    const newMessages = { ...prev };
                     delete newMessages[orderId];
                     return newMessages;
                 });
@@ -223,13 +223,12 @@ const AdminOrdersPage = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                            order.payment_status === 'paid'
+                                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.payment_status === 'paid'
                                                 ? 'bg-green-100 text-green-800'
                                                 : order.payment_status === 'pending'
                                                     ? 'bg-yellow-100 text-yellow-800'
                                                     : 'bg-red-100 text-red-800'
-                                        }`}>
+                                            }`}>
                                             {order.payment_status}
                                         </span>
                                     </td>
@@ -243,21 +242,10 @@ const AdminOrdersPage = () => {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {/* Display current order status with different colors */}
-                                        <div className="mb-2">
-                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                                                order.order_status === 'completed'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : order.order_status === 'dispatched'
-                                                        ? 'bg-blue-100 text-blue-800'
-                                                        : 'bg-yellow-100 text-yellow-800'
-                                            }`}>
-                                                {order.orderStatus || 'pending'}
-                                            </span>
-                                            {console.log(order.orderStatus)}
-                                        </div>
+
                                         <select
                                             name="orderStatus"
-                                            value={order.order_status || 'pending'}
+                                            value={order.orderStatus}
                                             onChange={(e) => handleStatusChange(order._id, e.target.value)}
                                             className="block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-2 focus:ring-blue-500"
                                             onClick={(e) => e.stopPropagation()}
@@ -315,25 +303,23 @@ const AdminOrdersPage = () => {
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Payment Status</p>
-                                        <p className={`font-medium ${
-                                            selectedOrder.payment_status === 'paid'
+                                        <p className={`font-medium ${selectedOrder.payment_status === 'paid'
                                                 ? 'text-green-600'
                                                 : selectedOrder.payment_status === 'pending'
                                                     ? 'text-yellow-600'
                                                     : 'text-red-600'
-                                        }`}>
+                                            }`}>
                                             {selectedOrder.payment_status}
                                         </p>
                                     </div>
                                     <div>
                                         <p className="text-sm text-gray-500">Order Status</p>
-                                        <p className={`font-medium ${
-                                            selectedOrder.order_status === 'completed'
+                                        <p className={`font-medium ${selectedOrder.order_status === 'completed'
                                                 ? 'text-green-600'
                                                 : selectedOrder.order_status === 'dispatched'
                                                     ? 'text-blue-600'
                                                     : 'text-yellow-600'
-                                        }`}>
+                                            }`}>
                                             {selectedOrder.order_status || 'Pending'}
                                         </p>
                                     </div>
