@@ -16,7 +16,7 @@ const AdminOrdersPage = () => {
         const fetchOrders = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/analytics/total-orders`);
+                const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/analytics/all-orders`);
                 setOrders(response.data.orders);
                 console.log(response.data)
                 setLoading(false);

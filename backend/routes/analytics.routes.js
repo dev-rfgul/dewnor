@@ -29,7 +29,7 @@ app.get('/total-revenue', async (req, res) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 });
-app.get('/total-orders', async (req, res) => {
+app.get('/all-orders', async (req, res) => {
     try {
         const orders = await Order.find({});
         if (!orders || orders.length == 0) {
@@ -59,6 +59,9 @@ app.put('/update-order-status', async (req, res) => {
         res.status(500).json({ message: "Server error", error });
     }
 
+})
+app.post('/order-msg',async(req,res)=>{
+    const newOrder=new Order(req.body);
 })
 
 export default app;
