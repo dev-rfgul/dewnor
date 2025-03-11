@@ -30,10 +30,21 @@ const User = () => {
         }
 
         try {
+            const token = JSON.parse(localStorage.getItem("user"))?.token; // Extract token safely
+            console.log(token)
+            if (!token) {
+                console.error("🚨 No token found in localStorage!");
+                toast.error("Authentication failed. Please log in again.");
+                return;
+            }
+
+            console.log("🛠️ Token being sent:", token); // Debugging
+
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/admin/add-user`, {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json",
+                    "Content-Type": "multipart/form-data",
+                    Authorization: `Bearer ${token}` // Send token here
                 },
                 body: JSON.stringify(user),
                 credentials: "include"
