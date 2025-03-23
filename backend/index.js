@@ -21,7 +21,7 @@ import { cloudinaryConnect } from './config/cloudinary.js';
 const app = express();
 
 // Properly handle CORS origins
-const allowedOrigins = ["https://dewnor-frontend.onrender.com","https://dewnor2.vercel.app/"];
+const allowedOrigins = ["https://dewnor-frontend.onrender.com","https://dewnor2.vercel.app"];
 if (process.env.FRONT_END_URL) {
     allowedOrigins.push(process.env.FRONT_END_URL);
 }
