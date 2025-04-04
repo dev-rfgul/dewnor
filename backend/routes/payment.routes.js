@@ -5,7 +5,9 @@ import bodyParser from 'body-parser';
 
 import Order from '../models/order.model.js'
 import AdminMsg from '../models/adminMsg.model.js';
-import Revenue from '../models/revenue.model.js'
+import Revenue from '../models/revenue.model.js';
+import UserModel from '../models/user.model.js';
+import ProductModel from '../models/product.model.js';
 
 const app = express();
 // Payment route
@@ -14,20 +16,16 @@ app.post("/makePayment", async (req, res) => {
 
         const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
         const { products, userId, address } = req.body;
-
         console.log("Payment request received:", {
             productsCount: products?.length,
             userId: userId?.substring(0, 5) + "..." // Log partial ID for privacy
         });
-
         if (!products || !Array.isArray(products) || products.length === 0) {
             return res.status(400).json({ error: "Invalid product data" });
         }
-
         if (!userId) {
             return res.status(400).json({ error: "User ID is required" });
         }
-
         // Creating line items with validation
         const lineItems = products.map((product) => {
             console.log(`Processing product: ${product.name}, price: ${product.price}`);
@@ -87,6 +85,7 @@ app.post("/makePayment", async (req, res) => {
 
         console.log("Payment session created successfully:", session.id);
         res.json({ sessionId: session.id });
+        
     } catch (error) {
         console.error("Payment Error:", error.message);
         console.error(error.stack);

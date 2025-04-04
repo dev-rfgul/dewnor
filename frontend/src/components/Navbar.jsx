@@ -269,7 +269,7 @@ const Navbar = () => {
                     </Link>
 
                     {/* Cart Icon */}
-                    <Link to="/cart" className="relative group">
+                    <Link to="/profile" className="relative group">
                         <FontAwesomeIcon icon={faShoppingCart} className="text-black text-lg group-hover:text-lime-500 transition-colors" />
                         <span className="absolute -top-2 -right-2 bg-lime-500 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center transition-all group-hover:scale-110">
                             {cartLength}
