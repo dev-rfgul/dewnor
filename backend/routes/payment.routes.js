@@ -2,6 +2,7 @@
 import express from 'express'
 import Stripe from 'stripe';
 import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
 
 import Order from '../models/order.model.js'
 import AdminMsg from '../models/adminMsg.model.js';
@@ -12,30 +13,27 @@ import ProductModel from '../models/product.model.js';
 const app = express();
 // Payment route
 app.post("/makePayment", async (req, res) => {
-    try {
+    const session = await mongoose.startSession(); // Start a new session for MongoDB transaction
+    session.startTransaction();
 
+    try {
         const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
         const { products, userId, address } = req.body;
-        console.log("Payment request received:", {
-            productsCount: products?.length,
-            userId: userId?.substring(0, 5) + "..." // Log partial ID for privacy
-        });
+
         if (!products || !Array.isArray(products) || products.length === 0) {
             return res.status(400).json({ error: "Invalid product data" });
         }
+
         if (!userId) {
             return res.status(400).json({ error: "User ID is required" });
         }
+
         // Creating line items with validation
         const lineItems = products.map((product) => {
-            console.log(`Processing product: ${product.name}, price: ${product.price}`);
-
-            // Validate the price
             if (!product.price || isNaN(product.price) || product.price <= 0) {
                 throw new Error(`Invalid price for product: ${product.name}`);
             }
 
-            // Get a valid image URL or empty array
             let imageUrl = [];
             if (product.images && Array.isArray(product.images) && product.images.length > 0) {
                 if (typeof product.images[0] === 'string' && product.images[0].startsWith('http')) {
@@ -48,7 +46,7 @@ app.post("/makePayment", async (req, res) => {
                     currency: "AED",
                     product_data: {
                         name: product.name || "Unnamed Product",
-                        images: imageUrl
+                        images: imageUrl,
                     },
                     unit_amount: Math.round(product.price * 100),
                 },
@@ -56,45 +54,57 @@ app.post("/makePayment", async (req, res) => {
             };
         });
 
-        console.log("Line items created successfully");
-
-        // Create a minimal version of products for metadata
-        const minimalProducts = products.map(p => ({
-            id: p.id,
-            name: p.name,
-            price: p.price
-        }));
-
         // Create a Stripe Checkout session
-        const session = await stripe.checkout.sessions.create({
+        const sessionStripe = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",
             billing_address_collection: 'required',
-            shipping_address_collection: {
-                allowed_countries: ['AE'], // Customize this
-            },
+            shipping_address_collection: { allowed_countries: ['AE'] },
             line_items: lineItems,
             success_url: `${process.env.FRONT_END_URL}/payment/success`,
             cancel_url: `${process.env.FRONT_END_URL}/payment/cancel`,
             metadata: {
                 userId: userId,
-                products: JSON.stringify(minimalProducts),
+                products: JSON.stringify(products),
                 address: address || "",
             },
         });
 
-        console.log("Payment session created successfully:", session.id);
-        res.json({ sessionId: session.id });
-        
+        // Update stock
+        for (const product of products) {
+            console.log(product)
+            const quantity = Number(product.quantity) || 1;
+            const productId = product._id;
+
+            const updatedProduct = await ProductModel.findByIdAndUpdate(
+                productId,
+                { $inc: { stock: -quantity } },
+                { new: true, session }
+            );
+
+            if (!updatedProduct) {
+                throw new Error(`Product not found or failed to update stock for product: ${productId}`);
+            }
+        }
+
+        // Commit the transaction
+        await session.commitTransaction();
+        session.endSession();
+
+        res.json({ sessionId: sessionStripe.id });
     } catch (error) {
+        // Rollback transaction in case of error
+        await session.abortTransaction();
+        session.endSession();
+
         console.error("Payment Error:", error.message);
-        console.error(error.stack);
         res.status(500).json({
             error: "Failed to create Stripe session",
             details: process.env.NODE_ENV === 'development' ? error.message : undefined
         });
     }
 });
+
 // Webhook route - needs raw body
 app.post("/webhook",
     bodyParser.raw({ type: "application/json" }),
