@@ -55,7 +55,7 @@ const ProductCard = ({ product, loading }) => {
             // If buying now, redirect to cart page
             if (buyNow) {
                 // You could also use dispatch to navigate via redux
-                window.location.href = '/cart';
+                window.location.href = '/profile';
             }
         } catch (error) {
             console.error("Error:", error.response?.data?.message || error.message);
