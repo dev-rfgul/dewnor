@@ -555,10 +555,19 @@ const OrdersList = ({ orders }) => (
                             <h4 className="font-semibold mt-3 mb-2">Items:</h4>
                             <ul className="space-y-2">
                                 {order.line_items?.map((item, i) => (
-                                    <li key={i} className="bg-gray-50 p-2 rounded">
-                                        <p className="font-medium">{item.description}</p>
-                                        <p className="text-sm text-gray-600">Amount: AED {item.amount_total / 100}</p>
+                                    <li key={i} className="bg-gray-50 p-4 rounded shadow-sm flex items-center space-x-4">
+
+                                        <img
+                                            src={item?.img}
+                                            alt={item?.description || "item image"}
+                                            className="w-16 h-16 object-cover rounded-md border border-gray-200"
+                                        />
+                                        <div>
+                                            <p className="font-medium">{item.quantity} X {item.description}</p>
+                                            <p className="text-sm text-gray-600">Amount: AED {item.amount_total / 100}</p>
+                                        </div>
                                     </li>
+
                                 ))}
                             </ul>
                         </div>
@@ -644,6 +653,7 @@ const UserProfile = () => {
                 }
 
                 const data = await response.json();
+                console.log(data.user)
                 if (data.user.role === "admin") {
                     navigate("/admin");
                     return;
@@ -829,20 +839,20 @@ const UserProfile = () => {
                     <button
                         onClick={() => setActiveTab("cart")}
                         className={`pb-2 px-4 font-medium transition-colors ${activeTab === "cart"
-                                ? "border-b-2 border-blue-600 text-blue-600"
-                                : "text-gray-500 hover:text-gray-900"
+                            ? "border-b-2 border-blue-600 text-blue-600"
+                            : "text-gray-500 hover:text-gray-900"
                             }`}
                     >
-                        <FaShoppingCart className="inline mr-2" /> Cart
+                        <FaShoppingCart className="inline mr-2" /> Cart {userData.cart.length || 0}
                     </button>
                     <button
                         onClick={() => setActiveTab("orders")}
                         className={`pb-2 px-4 font-medium transition-colors ${activeTab === "orders"
-                                ? "border-b-2 border-blue-600 text-blue-600"
-                                : "text-gray-500 hover:text-gray-900"
+                            ? "border-b-2 border-blue-600 text-blue-600"
+                            : "text-gray-500 hover:text-gray-900"
                             }`}
                     >
-                        <FaHistory className="inline mr-2" /> Orders
+                        <FaHistory className="inline mr-2" /> Orders {userData.orders.length || 0}
                     </button>
                 </div>
             </div>

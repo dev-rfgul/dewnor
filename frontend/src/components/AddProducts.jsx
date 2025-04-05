@@ -273,9 +273,12 @@ const ImageUploader = () => {
         setIsLoadingProducts(true);
         try {
             const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/product/get-products`);
+            // console.log("Fetching from:", `${import.meta.env.VITE_BACKEND_URL}/product/get-products`);
+            // console.log("Response:", response);
             if (!response.ok) throw new Error('Failed to fetch products');
             const data = await response.json();
-            setProducts(data);
+            console.log(data)
+            setProducts(data.products);
         } catch (error) {
             console.error("Error fetching products:", error);
             toast.error("Failed to load products. Please try again later.");
@@ -363,18 +366,18 @@ const ImageUploader = () => {
     const handleDelete = async (id) => {
         const confirmDelete = window.confirm("Do you want to delete this product?");
         if (!confirmDelete) return;
-    
+
         try {
             const token = JSON.parse(localStorage.getItem("user"))?.token; // Extract token safely
-    
+
             if (!token) {
                 console.error("🚨 No token found in localStorage!");
                 toast.error("Authentication failed. Please log in again.");
                 return;
             }
-    
+
             console.log("🛠️ Token being sent:", token); // Debugging
-    
+
             const response = await axios.delete(
                 `${import.meta.env.VITE_BACKEND_URL}/admin/delete-product/${id}`,
                 {
@@ -384,7 +387,7 @@ const ImageUploader = () => {
                     withCredentials: true,
                 }
             );
-    
+
             if (response.status === 200) {
                 toast.success("Product deleted successfully");
                 setProducts(products.filter(product => product._id !== id));
@@ -396,7 +399,7 @@ const ImageUploader = () => {
             toast.error(error.response?.data?.message || "An error occurred while deleting the product");
         }
     };
-    
+
 
     // Form input field component to reduce repetition
     const FormField = ({ name, type = "text", required = true }) => (
