@@ -180,7 +180,7 @@ app.post("/webhook",
                     savedOrder = await order.save();
                     await UserModel.findByIdAndUpdate(
                         metadata.userId,
-                        { $set: { orders: order._id } }
+                        { $push: { orders: order._id } }
                     )
                     console.log('✅ Order saved!', savedOrder._id);
                 } catch (error) {
