@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import Order from '../models/order.model.js'
 import AdminMsg from '../models/adminMsg.model.js';
 import Revenue from '../models/revenue.model.js'
+import UserModel from '../models/user.model.js'
 
 const app = express();
 // Payment route
@@ -15,7 +16,6 @@ app.post("/makePayment", async (req, res) => {
         const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
         const { products, userId, address } = req.body;
         console.log(products)
-
         console.log("Payment request received:", {
             productsCount: products?.length,
             userId: userId?.substring(0, 5) + "..." // Log partial ID for privacy
@@ -87,7 +87,14 @@ app.post("/makePayment", async (req, res) => {
         });
 
         console.log("Payment session created successfully:", session.id);
+        await UserModel.findByIdAndUpdate(
+            userId,
+            {
+                $set: { orderStatus: ['pending'] },
+                $set: { cart: [] }
+            })
         res.json({ sessionId: session.id });
+
     } catch (error) {
         console.error("Payment Error:", error.message);
         console.error(error.stack);
@@ -171,6 +178,10 @@ app.post("/webhook",
                 let savedOrder;
                 try {
                     savedOrder = await order.save();
+                    await UserModel.findByIdAndUpdate(
+                        metadata.userId,
+                        { $set: { orders: order._id } }
+                    )
                     console.log('✅ Order saved!', savedOrder._id);
                 } catch (error) {
                     console.error('❌ Order save error:', error.message);

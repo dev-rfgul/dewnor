@@ -77,7 +77,7 @@ const AdminOrdersPage = () => {
     // Updated to handle individual order status changes and messages
     const handleStatusChange = async (orderId, newStatus) => {
         try {
-            const res = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/analytics/update-order-status`, {
+            const res = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/admin/update-order-status`, {
                 orderID: orderId,
                 orderStatus: newStatus,
             });

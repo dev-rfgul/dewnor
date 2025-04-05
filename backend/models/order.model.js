@@ -62,7 +62,12 @@ const orderSchema = new mongoose.Schema({
     created_at: {
         type: Date,
         default: Date.now,
-    }
+    },
+    orderStatus: {
+        type: String,
+        enum: ['pending', 'dispatched', 'completed',],
+        default: 'pending'
+    },
 });
 
 export default mongoose.model('Order', orderSchema);
