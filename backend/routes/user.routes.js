@@ -35,7 +35,6 @@ router.post('/signup', async (req, res) => {
     await user.save();
     res.status(200).json({ message: 'User Created', user })
 })
-
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -82,8 +81,6 @@ router.post('/login', async (req, res) => {
         res.status(500).json({ message: 'Server error', error: err.message });
     }
 });
-
-
 router.post('/logout', (req, res) => {
     try {
         res.clearCookie("token", {
@@ -92,7 +89,7 @@ router.post('/logout', (req, res) => {
             sameSite: "None", // Must match SameSite when cookie was set
             domain: ".onrender.com", // Ensure it's cleared across subdomains
         });
-        
+
 
         res.status(200).json({ message: 'Logout successfull' })
     } catch (error) {
@@ -137,6 +134,19 @@ router.get('/get-user/:id', async (req, res) => {
         }
         res.status(200).json({ message: "User found", user })
     } catch (error) {
+        res.status(500).json({ message: "error while searching user", error: error })
+    }
+})
+router.get('/get-order-details/:id', async (req, res) => {
+    const id = req.params.id;
+    try {
+        const user = await userModel.findOne({ _id: id }).populate('orders')
+        if (!user) {
+            res.status(404).json({ message: "User not found" })
+        }
+        res.status(200).json({ message: "User found", user })
+    } catch (error) {
+        console.log(error)
         res.status(500).json({ message: "error while searching user", error: error })
     }
 })
