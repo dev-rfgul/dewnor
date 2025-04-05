@@ -454,12 +454,18 @@ const CartProductCard = ({ product, handleIncrease, handleDecrease, removeFromCa
                 </button>
                 <span className="text-lg font-semibold">{product.quantity || 1}</span>
                 <button
-                    onClick={() => handleIncrease(product._id)}
+                    onClick={() => {
+                        // Check if the current quantity is less than the stock before increasing
+                        if (product.quantity < product.stock) {
+                            handleIncrease(product._id);
+                        }
+                    }}
                     className="w-8 h-8 bg-gray-200 text-xl rounded-full flex items-center justify-center hover:bg-gray-300"
                     aria-label="Increase quantity"
                 >
                     <FaPlus className="text-xs" />
                 </button>
+
             </div>
 
             {/* Remove button */}
@@ -693,7 +699,7 @@ const UserProfile = () => {
                 ...product,
                 quantity: product.quantity || 1
             }));
-
+            console.log(response.data)
             setCartProducts(productsWithQuantity);
         } catch (error) {
             console.error("Error fetching products:", error);

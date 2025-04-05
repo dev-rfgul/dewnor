@@ -123,7 +123,7 @@ const ProductCard = ({ product, loading }) => {
                             Only {product.stock} left
                         </div>
                     )}
-                    {product.stock === 0 && (
+                    {product.stock <= 0 && (
                         <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                             <span className="text-white text-lg font-bold">Out of Stock</span>
                         </div>
@@ -151,6 +151,7 @@ const ProductCard = ({ product, loading }) => {
                         {product.tag && <span className="font-medium">{product.tag}</span>}
                         {product.tag && product.SKU && <span>|</span>}
                         {product.SKU && <span className="font-medium">SKU: {product.SKU}</span>}
+                        {product.SKU && <span className="font-medium">stock {product.stock}</span>}
                     </div>
                 </div>
             </Link>
@@ -160,7 +161,7 @@ const ProductCard = ({ product, loading }) => {
                 <button
                     onClick={() => addToCart(product._id)}
                     disabled={isAddingToCart || product.stock === 0}
-                    className={`w-full text-white text-sm px-5 py-2 rounded-lg shadow-md transition-all active:scale-95 ${product.stock === 0
+                    className={`w-full text-white text-sm px-5 py-2 rounded-lg shadow-md transition-all active:scale-95 ${product.stock <= 0
                         ? "bg-gray-400 cursor-not-allowed"
                         : "bg-gray-800 hover:bg-gray-700"
                         }`}
@@ -179,7 +180,7 @@ const ProductCard = ({ product, loading }) => {
                 </button>
                 <button
                     onClick={() => addToCart(product._id, true)}
-                    disabled={isBuyingNow || product.stock === 0}
+                    disabled={isBuyingNow || product.stock <=-1}
                     className={`w-full text-white text-sm px-5 py-2 rounded-lg shadow-md transition-all active:scale-95 ${product.stock === 0
                         ? "bg-blue-300 cursor-not-allowed"
                         : "bg-blue-500 hover:bg-blue-600"
