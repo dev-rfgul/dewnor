@@ -1,4 +1,3 @@
-
 // import express from 'express'
 // import Stripe from 'stripe';
 // import bodyParser from 'body-parser';
@@ -70,6 +69,8 @@
 //             name: p.name,
 //             price: p.price,
 //             quantity: p.quantity,
+//             // Store image URLs in metadata for retrieval in webhook
+//             imageUrl: p.images && Array.isArray(p.images) && p.images.length > 0 ? p.images[0] : "https://example.com/default-image.png"
 //         }));
 
 //         // Create a Stripe Checkout session
@@ -123,6 +124,7 @@
 //                 sig,
 //                 process.env.STRIPE_WEBHOOK_SECRET
 //             );
+
 //         } catch (err) {
 //             console.error("Webhook signature verification failed:", err.message);
 //             return res.status(400).send(`Webhook Error: ${err.message}`);
@@ -146,10 +148,53 @@
 //                     return res.status(200).json({ received: true });
 //                 }
 
+//                 // Create a map of productId to imageUrl from products array
+//                 const productImageMap = {};
+//                 products.forEach(product => {
+//                     if (product.id && product.imageUrl) {
+//                         productImageMap[product.id] = product.imageUrl;
+//                     }
+//                 });
+
 //                 // ✅ Get line items
 //                 const lineItems = await stripe.checkout.sessions.listLineItems(session.id, {
 //                     limit: 100,
+//                     expand: ['data.price.product'], // Expand to get product details including images
 //                 });
+
+//                 // Process line items to attach images
+//                 const processedLineItems = await Promise.all(lineItems.data.map(async (item) => {
+//                     let imageUrl = "https://example.com/default-image.png";
+                    
+//                     // Try to get the image from expanded product data
+//                     if (item.price?.product?.images && item.price.product.images.length > 0) {
+//                         imageUrl = item.price.product.images[0];
+//                     } else {
+//                         // Find matching product from metadata and use its image
+//                         const matchingProduct = products.find(p => 
+//                             item.description && p.name === item.description
+//                         );
+//                         if (matchingProduct && matchingProduct.imageUrl) {
+//                             imageUrl = matchingProduct.imageUrl;
+//                         }
+//                     }
+
+//                     return {
+//                         id: item.id,
+//                         description: item.description,
+//                         amount_subtotal: item.amount_subtotal,
+//                         amount_total: item.amount_total,
+//                         currency: item.currency,
+//                         quantity: item.quantity,
+//                         img: imageUrl, // Use the image URL we determined
+//                         price: {
+//                             id: item.price?.id,
+//                             unit_amount: item.price?.unit_amount,
+//                             currency: item.price?.currency,
+//                             product: item.price?.product?.id
+//                         }
+//                     };
+//                 }));
 
 //                 const order = new Order({
 //                     customer_email: session.customer_details?.email || null,
@@ -160,21 +205,7 @@
 //                         name: session.customer_details?.name || null,
 //                         phone: session.customer_details?.phone || null
 //                     },
-//                     line_items: lineItems.data.map(item => ({
-//                         id: item.id,
-//                         description: item.description,
-//                         amount_subtotal: item.amount_subtotal,
-//                         amount_total: item.amount_total,
-//                         currency: item.currency,
-//                         quantity: item.quantity,
-//                         img: item.price.product_data.images[0] || "https://example.com/default-image.png", // Ensure you are fetching the image URL correctly
-//                         price: {
-//                             id: item.price?.id,
-//                             unit_amount: item.price?.unit_amount,
-//                             currency: item.price?.currency,
-//                             product: item.price?.product
-//                         }
-//                     })),
+//                     line_items: processedLineItems,
 //                     amount_total: session.amount_total,
 //                     payment_status: session.payment_status,
 //                     payment_intent: session.payment_intent
@@ -281,7 +312,6 @@ const app = express();
 // Payment route
 app.post("/makePayment", async (req, res) => {
     try {
-
         const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
         const { products, userId, address } = req.body;
         console.log(products)
@@ -290,12 +320,46 @@ app.post("/makePayment", async (req, res) => {
             userId: userId?.substring(0, 5) + "..." // Log partial ID for privacy
         });
 
+
         if (!products || !Array.isArray(products) || products.length === 0) {
             return res.status(400).json({ error: "Invalid product data" });
         }
 
         if (!userId) {
             return res.status(400).json({ error: "User ID is required" });
+        }
+
+        // ✅ STOCK VALIDATION: Check if all products are in stock before proceeding
+        const stockValidationErrors = [];
+        
+        for (const product of products) {
+            if (!product._id) {
+                stockValidationErrors.push(`Product ID missing for ${product.name || 'unknown product'}`);
+                continue;
+            }
+
+            // Get current product from database to check stock
+            const dbProduct = await productModel.findById(product._id);
+            
+            if (!dbProduct) {
+                stockValidationErrors.push(`Product not found: ${product.name || product._id}`);
+                continue;
+            }
+            
+            // Check if requested quantity exceeds available stock
+            if (dbProduct.stock < product.quantity) {
+                stockValidationErrors.push(
+                    `Not enough stock for ${dbProduct.name}. Requested: ${product.quantity}, Available: ${dbProduct.stock}`
+                );
+            }
+        }
+        
+        // If any stock validation errors, return them to the client
+        if (stockValidationErrors.length > 0) {
+            return res.status(400).json({ 
+                error: "Stock validation failed", 
+                details: stockValidationErrors 
+            });
         }
 
         // Creating line items with validation
@@ -413,6 +477,33 @@ app.post("/webhook",
                 } catch (e) {
                     console.error("Failed to parse products JSON:", e);
                     return res.status(200).json({ received: true });
+                }
+
+                // ✅ DOUBLE-CHECK STOCK: Verify stock levels again before finalizing
+                // This handles the edge case where stock was depleted between checkout and payment completion
+                const stockValidationErrors = [];
+                
+                for (const product of products) {
+                    if (!product.id) continue;
+                    
+                    const dbProduct = await productModel.findById(product.id);
+                    
+                    if (!dbProduct) {
+                        stockValidationErrors.push(`Product not found: ${product.name || product.id}`);
+                        continue;
+                    }
+                    
+                    if (dbProduct.stock < product.quantity) {
+                        stockValidationErrors.push(
+                            `Not enough stock for ${dbProduct.name}. Requested: ${product.quantity}, Available: ${dbProduct.stock}`
+                        );
+                    }
+                }
+                
+                if (stockValidationErrors.length > 0) {
+                    console.error("Stock validation failed in webhook:", stockValidationErrors);
+                    // Consider how to handle this - perhaps create a failed order record and notify admin
+                    // You could also refund the payment here
                 }
 
                 // Create a map of productId to imageUrl from products array
