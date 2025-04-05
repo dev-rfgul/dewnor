@@ -178,6 +178,7 @@ import bcrypt from 'bcrypt'
 
 
 import orderModel from '../models/order.model.js';
+
 const app = express();
 cloudinaryConnect();
 
@@ -314,14 +315,14 @@ app.put('/update-order-status', async (req, res) => {
     if (!orderID || !orderStatus) {
         return res.status(400).json({ message: "both order id and order status are required " })
     }
-    try{
-        const updateOrderStatus=await orderModel.findByIdAndUpdate(orderID,{orderStatus},{new:true});
-        if(!updateOrderStatus){
-            return res.status(400).json({message:"Order not found"})
+    try {
+        const updateOrderStatus = await orderModel.findByIdAndUpdate(orderID, { orderStatus }, { new: true });
+        if (!updateOrderStatus) {
+            return res.status(400).json({ message: "Order not found" })
         }
-        return res.status(200).json({message:"order status update successfully"})
+        return res.status(200).json({ message: "order status update successfully" })
     }
-    catch(error){
+    catch (error) {
         console.error("Error updating order status:", error);
         res.status(500).json({ message: "Server error", error });
     }

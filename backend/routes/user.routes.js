@@ -128,18 +128,6 @@ router.get('/get-users', async (req, res) => {
 router.get('/get-user/:id', async (req, res) => {
     const id = req.params.id;
     try {
-        const user = await userModel.findOne({ _id: id })
-        if (!user) {
-            res.status(404).json({ message: "User not found" })
-        }
-        res.status(200).json({ message: "User found", user })
-    } catch (error) {
-        res.status(500).json({ message: "error while searching user", error: error })
-    }
-})
-router.get('/get-order-details/:id', async (req, res) => {
-    const id = req.params.id;
-    try {
         const user = await userModel.findOne({ _id: id }).populate('orders')
         if (!user) {
             res.status(404).json({ message: "User not found" })
@@ -150,5 +138,7 @@ router.get('/get-order-details/:id', async (req, res) => {
         res.status(500).json({ message: "error while searching user", error: error })
     }
 })
+
+
 
 export default router;

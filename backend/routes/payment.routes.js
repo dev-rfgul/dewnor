@@ -7,6 +7,8 @@ import Order from '../models/order.model.js'
 import AdminMsg from '../models/adminMsg.model.js';
 import Revenue from '../models/revenue.model.js'
 import UserModel from '../models/user.model.js'
+import productModel from '../models/product.model.js'
+
 
 const app = express();
 // Payment route
@@ -63,9 +65,10 @@ app.post("/makePayment", async (req, res) => {
 
         // Create a minimal version of products for metadata
         const minimalProducts = products.map(p => ({
-            id: p.id,
+            id: p._id,
             name: p.name,
-            price: p.price
+            price: p.price,
+            quantity:p.quantity
         }));
 
         // Create a Stripe Checkout session
@@ -174,20 +177,60 @@ app.post("/webhook",
                     payment_status: session.payment_status,
                     payment_intent: session.payment_intent
                 });
-                console.log(order)
+
+                console.log(order);
+
                 let savedOrder;
                 try {
+                    // Save the order
                     savedOrder = await order.save();
+
+                    // Update user's orders
                     await UserModel.findByIdAndUpdate(
                         metadata.userId,
-                        { $push: { orders: order._id } }
-                    )
+                        {
+                            $push: { orders: order._id },
+                        }
+                    );
                     console.log('✅ Order saved!', savedOrder._id);
+
+                    // Update product stock for each product in the order
+                    if (Array.isArray(products)) {
+                        console.log("Products in webhook:", products);
+                        
+                        // Process each product
+                        for (const product of products) {
+                            const productId = product.id; // FIX: Use 'id' instead of '_id'
+                            const quantity = product.quantity || 1;
+
+                            console.log(`Updating stock for product ID: ${productId}, quantity: ${quantity}`);
+
+                            if (productId) {
+                                // Decrement stock by purchased quantity
+                                const updatedProduct = await productModel.findByIdAndUpdate(
+                                    productId,
+                                    { $inc: { stock: -quantity } },
+                                    { new: true }
+                                );
+
+                                if (updatedProduct) {
+                                    console.log(`✅ Updated stock for product ${productId}. New stock: ${updatedProduct.stock}`);
+                                    
+                                    // Check if stock is low
+                                    if (updatedProduct.stock <= 5) {
+                                        console.log(`⚠️ Low stock alert for product ${productId}: ${updatedProduct.stock} remaining`);
+                                        // Add code here to notify admin about low stock
+                                    }
+                                } else {
+                                    console.log(`❌ Product not found with ID: ${productId}`);
+                                }
+                            }
+                        }
+                    }
                 } catch (error) {
-                    console.error('❌ Order save error:', error.message);
+                    console.error('❌ Order save or stock update error:', error.message);
                     console.error('Full error:', error);
                 }
-
 
                 // Admin Message
                 await AdminMsg.create({
