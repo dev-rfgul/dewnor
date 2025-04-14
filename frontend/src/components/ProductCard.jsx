@@ -178,6 +178,7 @@ const ProductCard = ({ product, loading }) => {
                         "ADD TO CART"
                     )}
                 </button>
+                
                 <button
                     onClick={() => addToCart(product._id, true)}
                     disabled={isBuyingNow || product.stock <=-1}
