@@ -252,11 +252,11 @@ const INITIAL_PRODUCT_STATE = {
     size: '',
     SKU: '',
     category: '',
-    tag: 'wallet', // Default value
+    tag: 'wallets', // Default value
 };
 
 const TAGS = [
-    { value: 'wallet', label: 'Wallet' },
+    { value: 'wallets', label: 'Wallets' },
     { value: 'gadgets', label: 'Gadgets' },
     { value: 'bags', label: 'Bags' },
 ];
