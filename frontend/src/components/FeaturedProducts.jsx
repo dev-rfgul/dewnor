@@ -371,6 +371,7 @@ const ProductGrid = () => {
             result = result.filter(product => product.category === filters.category);
         }
 
+        
         // Apply price range filter
         result = result.filter(product =>
             product.price >= filters.priceRange[0] &&
